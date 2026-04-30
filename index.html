@@ -335,9 +335,59 @@
         renderInterface();
     }
 
+    // ==========================================
+    // NOVA FUNÇÃO DE CANCELAR TORNEIO
+    // ==========================================
     window.cancelarTorneioAtual = function() {
-        if(confirm("Deseja cancelar a EDIÇÃO ATUAL? Tudo desse campeonato sumirá (os campeonatos anteriores ficam intactos).")) {
-            window.state.torneio = defaultState.torneio; window.salvarDados();
+        if(confirm("Deseja cancelar a EDIÇÃO ATUAL? \n\nTudo desse campeonato sumirá e os pontos ganhos nele serão removidos das Estatísticas Globais.")) {
+            
+            // 1. Reverter pontos do torneio atual no Global (Jogos da Liga)
+            window.state.torneio.players.forEach(p => {
+                let gs = window.state.globalStats[p.name];
+                if (gs) {
+                    gs.matches -= p.matches;
+                    gs.wins -= p.wins;
+                    gs.losses -= p.losses;
+                    gs.ballsBalance -= p.ballsBalance;
+                }
+            });
+
+            // 2. Reverter os jogos do Mata-Mata que já tenham sido concluídos
+            let k = window.state.torneio.knockout;
+            ['semi1', 'semi2', 'terceiro', 'final'].forEach(fase => {
+                let m = k[fase];
+                if (m && m.completed) {
+                    if (window.state.globalStats[m.winner.name]) {
+                        window.state.globalStats[m.winner.name].matches--;
+                        window.state.globalStats[m.winner.name].wins--;
+                    }
+                    if (window.state.globalStats[m.loser.name]) {
+                        // A derrota do loser já foi computada no p.losses lá na Liga, mas a partida (matches) a mais precisa ser retirada
+                        window.state.globalStats[m.loser.name].matches--;
+                    }
+                }
+            });
+
+            // 3. Limpar "fantasmas" (jogadores que ficaram com 0 jogos no histórico geral)
+            Object.keys(window.state.globalStats).forEach(name => {
+                if (window.state.globalStats[name].matches <= 0) {
+                    delete window.state.globalStats[name];
+                }
+            });
+
+            // 4. Zera o torneio atual de forma segura
+            window.state.torneio = {
+                phase: 'cadastro', players: [], matches: [], 
+                knockout: { 
+                    semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, 
+                    semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, 
+                    terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, 
+                    final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } 
+                }, 
+                podium: { first: null, second: null, third: null }
+            };
+
+            window.salvarDados();
         }
     }
 
@@ -468,16 +518,23 @@
         let t = window.state.torneio; let c = t.players.find(p => p.name === t.podium.first.name);
         if (c && c.losses === 0 && !window.state.globalStats[c.name].achievements.includes('🛡️ Invicto')) window.state.globalStats[c.name].achievements.push('🛡️ Invicto');
         
-        // NOVIDADE: Salvando a Tabela Completa e Hora Exata no Histórico!
         let dataHora = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
         window.state.hallOfFame.push({ 
             date: dataHora, 
             podium: { first: t.podium.first, second: t.podium.second, third: t.podium.third },
-            playersFullTable: JSON.parse(JSON.stringify(t.players)) // Copia profunda para congelar a tabela daquele dia
+            playersFullTable: JSON.parse(JSON.stringify(t.players)) 
         });
         
-        t.phase = 'cadastro'; t.matches = []; t.knockout = defaultState.torneio.knockout; t.podium = { first: null, second: null, third: null };
-        t.players.forEach(p => { p.matches = p.wins = p.losses = p.points = p.ballsBalance = 0; });
+        window.state.torneio = {
+            phase: 'cadastro', players: [], matches: [], 
+            knockout: { 
+                semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, 
+                semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, 
+                terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, 
+                final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } 
+            }, 
+            podium: { first: null, second: null, third: null }
+        };
         window.salvarDados(); alert("Campeonato registrado com sucesso no Histórico Eterno!");
     }
 
@@ -507,7 +564,6 @@
             
             [...window.state.hallOfFame].reverse().forEach((ed, i) => { 
                 let tHtml = '';
-                // Se tiver a tabela completa salva, monta o acordeão
                 if (ed.playersFullTable && ed.playersFullTable.length > 0) {
                     ed.playersFullTable.sort((a, b) => b.points !== a.points ? b.points - a.points : (b.wins !== a.wins ? b.wins - a.wins : b.ballsBalance - a.ballsBalance));
                     let trs = ed.playersFullTable.map((p, idx) => `<tr><td>${idx+1}º</td><td style="text-align:left;"><strong>${p.vulgo || p.name}</strong></td><td>${p.points}</td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td></tr>`).join('');
