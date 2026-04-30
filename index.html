@@ -49,25 +49,28 @@
         button:hover { background-color: #15803e; }
         .btn-start { background-color: var(--highlight); color: #1a1a1a; width: 100%; font-size: 1.1em; padding: 15px; margin-top: 10px; }
         .btn-start:hover { background-color: #d68910; }
-        .btn-danger { background-color: var(--danger); color: white; margin-top: 20px; width: auto; }
+        .btn-danger { background-color: var(--danger); color: white; width: auto; padding: 10px 20px; }
+        .btn-danger:hover { background-color: #a93226; }
         
         .matches-container { max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px; }
         .match-item { background: #2c2c2c; padding: 15px; border-radius: 6px; border-left: 4px solid var(--home-color); display: flex; flex-direction: column; gap: 10px; }
         .match-header { font-weight: bold; font-size: 1.1em; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px; }
         
-        /* Tabelas Responsivas */
+        /* Tabelas Responsivas & Nomes/Vulgo */
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 500px; }
         th, td { padding: 12px; text-align: center; border-bottom: 1px solid #444; }
         th { background-color: var(--green-table); }
         .player-cell { display: flex; align-items: center; gap: 10px; text-align: left; }
         .player-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--highlight); background: #333; flex-shrink: 0; }
+        .player-info { display: flex; flex-direction: column; justify-content: center; line-height: 1.2; }
+        .vulgo-text { font-size: 0.75em; color: #aaa; margin-top: 2px; font-weight: normal; }
         
         /* Mata-mata */
         .bo3-match { background: #2c2c2c; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 15px; border: 2px solid #555; position: relative; }
         .bo3-score { font-size: 2em; font-weight: bold; margin: 15px 0; color: var(--highlight); }
         .bo3-players { display: flex; justify-content: space-around; align-items: center; font-size: 1.2em; }
-        .bo3-player-card { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 35%; position: relative; }
+        .bo3-player-card { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 35%; position: relative; }
         .bo3-player-card img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #555; }
         
         /* Pódio */
@@ -138,7 +141,10 @@
         <span style="font-size: 0.85em; color: var(--gold); text-transform: uppercase; font-weight: bold; letter-spacing: 2px;">👑 Atual Campeão 👑</span>
         <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 10px;">
             <img id="championImg" src="" alt="Campeão" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid var(--gold); object-fit: cover;">
-            <h2 id="championNameText" style="margin: 0; color: white;">Carregando...</h2>
+            <div style="text-align: left;">
+                <h2 id="championNameText" style="margin: 0; color: white;">Carregando...</h2>
+                <span id="championVulgoText" class="vulgo-text" style="color: #ffd700;"></span>
+            </div>
         </div>
     </div>
 
@@ -155,7 +161,8 @@
         <div class="card admin-only" id="section-cadastro">
             <h2>1. Cadastrar Jogadores</h2>
             <div class="form-group">
-                <input type="text" id="playerName" placeholder="Nome do Jogador" required>
+                <input type="text" id="playerName" placeholder="Nome do Jogador" required style="flex: 1.5;">
+                <input type="text" id="playerVulgo" placeholder="Vulgo (Apelido)" style="flex: 1;">
                 <input type="file" id="playerImgFile" accept="image/*" title="Foto (Opcional)">
                 <button onclick="adicionarJogador()">Adicionar</button>
             </div>
@@ -194,6 +201,11 @@
             <div class="podium-container" id="podiumContainer"></div>
             <button class="btn-start admin-only" style="margin-top: 40px;" onclick="iniciarNovaEdicao()">Registrar no Hall da Fama e Iniciar Nova Edição</button>
         </div>
+
+        <!-- Cancelar Edição (Admin) -->
+        <div style="text-align: right; margin-top: 20px;" class="admin-only">
+            <button class="btn-danger" onclick="cancelarTorneioAtual()">🛑 Cancelar Edição Atual (Manter Histórico)</button>
+        </div>
     </div>
 
     <!-- ================= CONTEÚDO: ESTATÍSTICAS GLOBAIS ================= -->
@@ -215,7 +227,7 @@
             <div id="hallOfFameContainer" style="display: flex; flex-direction: column; gap: 15px;"></div>
         </div>
 
-        <div style="text-align: right;" class="admin-only">
+        <div style="text-align: right; margin-top: 20px;" class="admin-only">
             <button class="btn-danger" onclick="resetarTudoHard()">⚠️ Resetar TUDO (Torneio e Histórico)</button>
         </div>
     </div>
@@ -227,15 +239,15 @@
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
     // 🔴🔴 LEMBRE-SE DE COLAR SUAS CHAVES AQUI 🔴🔴
-  const firebaseConfig = {
-  apiKey: "AIzaSyBustQAV_OBODtdNePDxyyGYezkogqUxBI",
-  authDomain: "snuk-champions.firebaseapp.com",
-  projectId: "snuk-champions",
-  storageBucket: "snuk-champions.firebasestorage.app",
-  messagingSenderId: "848577242480",
-  appId: "1:848577242480:web:438f82d115460bce3a5bb5",
-  measurementId: "G-13D5RGCBQ2"
-};
+    const firebaseConfig = {
+        apiKey: "AIzaSyBustQAV_OBODtdNePDxyyGYezkogqUxBI",
+        authDomain: "snuk-champions.firebaseapp.com",
+        projectId: "snuk-champions",
+        storageBucket: "snuk-champions.firebasestorage.app",
+        messagingSenderId: "848577242480",
+        appId: "1:848577242480:web:438f82d115460bce3a5bb5",
+        measurementId: "G-13D5RGCBQ2"
+    };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
@@ -254,23 +266,17 @@
 
     window.sairDoSistema = function() {
         sessionStorage.removeItem('sinucaRole');
-        document.getElementById('adminUser').value = '';
-        document.getElementById('adminPass').value = '';
-        document.getElementById('mainApp').classList.add('hidden');
-        document.getElementById('loginOverlay').classList.remove('hidden');
+        document.getElementById('adminUser').value = ''; document.getElementById('adminPass').value = '';
+        document.getElementById('mainApp').classList.add('hidden'); document.getElementById('loginOverlay').classList.remove('hidden');
     }
 
     function iniciarAppGrafica() {
-        document.getElementById('loginOverlay').classList.add('hidden');
-        document.getElementById('mainApp').classList.remove('hidden');
-        
+        document.getElementById('loginOverlay').classList.add('hidden'); document.getElementById('mainApp').classList.remove('hidden');
         if (sessionStorage.getItem('sinucaRole') === 'viewer') {
             document.body.classList.add('viewer-mode');
-            document.getElementById('userBadge').textContent = '👁️ Visualizador';
-            document.getElementById('userBadge').style.background = '#555';
+            document.getElementById('userBadge').textContent = '👁️ Visualizador'; document.getElementById('userBadge').style.background = '#555';
         } else {
-            document.body.classList.remove('viewer-mode');
-            document.getElementById('userBadge').textContent = '👑 Admin';
+            document.body.classList.remove('viewer-mode'); document.getElementById('userBadge').textContent = '👑 Admin';
         }
         if (window.state) renderizarInterface();
     }
@@ -301,7 +307,7 @@
         try { await setDoc(torneioDoc, window.state); } catch (e) { alert("Erro ao sincronizar."); }
     }
 
-    // --- NAVEGAÇÃO ---
+    // --- NAVEGAÇÃO E CONTROLE GERAL ---
     window.alterarAba = function(aba) {
         abaAtual = aba;
         document.getElementById('tab-torneio').classList.remove('active'); document.getElementById('tab-global').classList.remove('active');
@@ -310,17 +316,41 @@
         renderizarInterface();
     }
 
+    window.cancelarTorneioAtual = function() {
+        if(confirm("Tem certeza que deseja cancelar a EDIÇÃO ATUAL? Tudo desse campeonato sumirá, mas o Hall da Fama ficará intacto.")) {
+            window.state.torneio = {
+                phase: 'cadastro', players: [], matches: [],
+                knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } },
+                podium: { first: null, second: null, third: null }
+            };
+            window.salvarDados();
+        }
+    }
+
     // --- CADASTRO ---
     function registrarNoGlobal(p) {
-        if (!window.state.globalStats[p.name]) window.state.globalStats[p.name] = { img: p.img, matches: 0, wins: 0, losses: 0, ballsBalance: 0, achievements: [] };
+        if (!window.state.globalStats[p.name]) {
+            window.state.globalStats[p.name] = { vulgo: p.vulgo, img: p.img, matches: 0, wins: 0, losses: 0, ballsBalance: 0, achievements: [] };
+        } else {
+            // Atualiza img e vulgo se a pessoa colocou algo novo agora
+            if(p.img) window.state.globalStats[p.name].img = p.img;
+            if(p.vulgo) window.state.globalStats[p.name].vulgo = p.vulgo;
+        }
     }
 
     window.adicionarJogador = function() {
         const name = document.getElementById('playerName').value.trim();
+        let vulgo = document.getElementById('playerVulgo').value.trim();
         const fileInput = document.getElementById('playerImgFile');
         const file = fileInput.files[0];
+        
         if (!name) return alert("Digite o nome!");
         if (window.state.torneio.players.find(p => p.name === name)) return alert("Jogador já existe!");
+
+        // Se não escreveu Vulgo, pega o antigo salvo (se existir)
+        if (!vulgo && window.state.globalStats[name] && window.state.globalStats[name].vulgo) {
+            vulgo = window.state.globalStats[name].vulgo;
+        }
 
         if (file) {
             const r = new FileReader();
@@ -329,19 +359,20 @@
                 img.onload = function() {
                     const canvas = document.createElement('canvas'); const w = 150; canvas.width = w; canvas.height = img.height * (w / img.width);
                     canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-                    salvarNovoJogador(name, canvas.toDataURL('image/jpeg', 0.7));
+                    salvarNovoJogador(name, vulgo, canvas.toDataURL('image/jpeg', 0.7));
                 }; img.src = e.target.result;
             }; r.readAsDataURL(file);
         } else {
-            let imgData = window.state.globalStats[name] ? window.state.globalStats[name].img : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=f39c12&color=fff';
-            salvarNovoJogador(name, imgData);
+            let imgData = window.state.globalStats[name] && window.state.globalStats[name].img ? window.state.globalStats[name].img : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=f39c12&color=fff';
+            salvarNovoJogador(name, vulgo, imgData);
         }
     }
 
-    function salvarNovoJogador(name, imgData) {
-        let np = { name, img: imgData, matches: 0, wins: 0, losses: 0, points: 0, ballsBalance: 0 };
+    function salvarNovoJogador(name, vulgo, imgData) {
+        let np = { name, vulgo, img: imgData, matches: 0, wins: 0, losses: 0, points: 0, ballsBalance: 0 };
         window.state.torneio.players.push(np); registrarNoGlobal(np);
-        document.getElementById('playerName').value = ''; document.getElementById('playerImgFile').value = ''; window.salvarDados(); 
+        document.getElementById('playerName').value = ''; document.getElementById('playerVulgo').value = ''; document.getElementById('playerImgFile').value = ''; 
+        window.salvarDados(); 
     }
 
     // --- LIGA ---
@@ -413,6 +444,7 @@
         let t = window.state.torneio; let c = t.players.find(p => p.name === t.podium.first.name);
         if (c && c.losses === 0 && !window.state.globalStats[c.name].achievements.includes('🛡️ Invicto')) window.state.globalStats[c.name].achievements.push('🛡️ Invicto');
         window.state.hallOfFame.push({ date: new Date().toLocaleDateString('pt-BR'), podium: { first: t.podium.first, second: t.podium.second, third: t.podium.third } });
+        
         t.phase = 'cadastro'; t.matches = []; t.knockout = defaultState.torneio.knockout; t.podium = { first: null, second: null, third: null };
         t.players.forEach(p => { p.matches = p.wins = p.losses = p.points = p.ballsBalance = 0; });
         window.salvarDados(); alert("Salvo no Hall da Fama!");
@@ -421,29 +453,35 @@
     window.resetarTudoHard = function() { if (prompt("Digite 'APAGAR' para zerar tudo:") === "APAGAR") { window.state = defaultState; window.salvarDados(); } }
 
     // --- RENDERIZAÇÃO ---
+    function formatarNome(p) {
+        return `<div class="player-info"><span>${p.name}</span>${p.vulgo ? `<span class="vulgo-text">Vulgo: ${p.vulgo}</span>` : ''}</div>`;
+    }
+
     function renderizarCampeaoAtual() {
         const text = document.getElementById('championNameText');
+        const vulgoText = document.getElementById('championVulgoText');
         const img = document.getElementById('championImg');
         
         if (window.state.hallOfFame && window.state.hallOfFame.length > 0) {
             const ultimo = window.state.hallOfFame[window.state.hallOfFame.length - 1];
             text.textContent = ultimo.podium.first.name;
+            vulgoText.textContent = ultimo.podium.first.vulgo ? `(Vulgo: ${ultimo.podium.first.vulgo})` : '';
             img.src = ultimo.podium.first.img;
         } else {
             text.textContent = "Fernando";
+            vulgoText.textContent = "";
             img.src = "https://ui-avatars.com/api/?name=Fernando&background=FFD700&color=000";
         }
     }
 
     function renderizarInterface() {
         if (!window.state) return;
-        
         renderizarCampeaoAtual();
 
         if (abaAtual === 'global') {
             const tbody = document.getElementById('globalStatsBody'); tbody.innerHTML = '';
             let s = Object.entries(window.state.globalStats).map(([name, data]) => ({ name, ...data })).sort((a,b) => b.wins - a.wins);
-            s.forEach(p => tbody.innerHTML += `<tr><td class="player-cell"><img src="${p.img}" class="player-img">${p.name}</td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td><td><div class="achievements">${p.achievements.map(b=>`<span class="badge">${b}</span>`).join('')}</div></td></tr>`);
+            s.forEach(p => tbody.innerHTML += `<tr><td class="player-cell"><img src="${p.img}" class="player-img">${formatarNome(p)}</td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td><td><div class="achievements">${p.achievements.map(b=>`<span class="badge">${b}</span>`).join('')}</div></td></tr>`);
             
             const hof = document.getElementById('hallOfFameContainer'); hof.innerHTML = window.state.hallOfFame.length ? '' : '<p>Vazio</p>';
             [...window.state.hallOfFame].reverse().forEach((ed, i) => {
@@ -458,7 +496,7 @@
         ['cadastro', 'tabela', 'liga', 'matamata', 'podio'].forEach(id => document.getElementById('section-'+id).classList.add('hidden'));
 
         const tbody = document.querySelector('#standingsTable tbody'); tbody.innerHTML = '';
-        t.players.forEach((p, i) => tbody.innerHTML += `<tr style="${t.phase!=='cadastro'&&i<4?'background:rgba(46,204,113,0.1)':''}"><td>${i+1}º</td><td class="player-cell"><img src="${p.img}" class="player-img">${p.name}</td><td><strong>${p.points}</strong></td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td></tr>`);
+        t.players.forEach((p, i) => tbody.innerHTML += `<tr style="${t.phase!=='cadastro'&&i<4?'background:rgba(46,204,113,0.1)':''}"><td>${i+1}º</td><td class="player-cell"><img src="${p.img}" class="player-img">${formatarNome(p)}</td><td><strong>${p.points}</strong></td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td></tr>`);
 
         if (t.phase === 'cadastro') {
             document.getElementById('section-cadastro').classList.remove('hidden'); document.getElementById('section-tabela').classList.remove('hidden');
@@ -474,7 +512,7 @@
         } else if (['semis', 'terceiro', 'final'].includes(t.phase)) {
             document.getElementById('section-matamata').classList.remove('hidden');
             const c = document.getElementById('containerConfrontos'); c.innerHTML = ''; let k = t.knockout;
-            let bo3 = (tit, id, d) => !d.p1 ? '' : `<div class="bo3-match"><h3>${tit}</h3><div class="bo3-players"><div class="bo3-player-card"><img src="${d.p1.img}"><span>${d.p1.name}</span>${d.completed?'':`<button class="admin-only" onclick="registrarVitoriaBo3('${id}', 1)">Venceu</button>`}</div><div class="bo3-score">${d.winsP1} x ${d.winsP2}</div><div class="bo3-player-card"><img src="${d.p2.img}"><span>${d.p2.name}</span>${d.completed?'':`<button class="admin-only" onclick="registrarVitoriaBo3('${id}', 2)">Venceu</button>`}</div></div>${d.completed?`<div style="color:var(--highlight); margin-top:10px;">Vencedor: ${d.winner.name}</div>`:''}</div>`;
+            let bo3 = (tit, id, d) => !d.p1 ? '' : `<div class="bo3-match"><h3>${tit}</h3><div class="bo3-players"><div class="bo3-player-card"><img src="${d.p1.img}"><div class="player-info"><span>${d.p1.name}</span>${d.p1.vulgo ? `<span class="vulgo-text">${d.p1.vulgo}</span>` : ''}</div>${d.completed?'':`<button class="admin-only" onclick="registrarVitoriaBo3('${id}', 1)">Venceu</button>`}</div><div class="bo3-score">${d.winsP1} x ${d.winsP2}</div><div class="bo3-player-card"><img src="${d.p2.img}"><div class="player-info"><span>${d.p2.name}</span>${d.p2.vulgo ? `<span class="vulgo-text">${d.p2.vulgo}</span>` : ''}</div>${d.completed?'':`<button class="admin-only" onclick="registrarVitoriaBo3('${id}', 2)">Venceu</button>`}</div></div>${d.completed?`<div style="color:var(--highlight); margin-top:10px;">Vencedor: ${d.winner.name}</div>`:''}</div>`;
             if (t.phase === 'semis') { c.innerHTML += bo3('Semifinal 1', 'semi1', k.semi1) + bo3('Semifinal 2', 'semi2', k.semi2); }
             else if (t.phase === 'terceiro') c.innerHTML += bo3('3º Lugar', 'terceiro', k.terceiro); else c.innerHTML += bo3('Final', 'final', k.final);
         } else if (t.phase === 'podio') {
