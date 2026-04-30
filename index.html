@@ -36,14 +36,14 @@
         /* Campeão Atual Banner */
         .champion-banner { background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%); border: 2px solid var(--gold); border-radius: 8px; padding: 15px; text-align: center; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.15); margin-bottom: 10px; }
         
-        /* Navegação */
+        /* Navegação (3 Abas agora) */
         .nav-tabs { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-        .tab { flex: 1; min-width: 120px; padding: 12px; text-align: center; background: #333; cursor: pointer; border-radius: 8px; font-weight: bold; transition: 0.3s; }
-        .tab.active { background: var(--green-table); color: white; }
+        .tab { flex: 1; min-width: 100px; padding: 12px; text-align: center; background: #333; cursor: pointer; border-radius: 8px; font-weight: bold; transition: 0.3s; font-size: 0.9em; }
+        .tab.active { background: var(--highlight); color: #1a1a1a; }
         .tab:hover:not(.active) { background: #444; }
 
-        .card { background-color: var(--panel-bg); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.5); border-top: 4px solid var(--green-table); }
-        .form-group { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; flex-wrap: wrap; }
+        .card { background-color: var(--panel-bg); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.5); border-top: 4px solid var(--highlight); }
+        .form-group { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; flex-wrap: wrap; justify-content: center;}
         input, select, button { padding: 10px; border-radius: 4px; border: 1px solid #444; background: #333; color: white; box-sizing: border-box; }
         input[type="file"] { flex: 1; min-width: 200px; background: #222; cursor: pointer; }
         button { background-color: var(--green-table); cursor: pointer; font-weight: bold; transition: 0.2s; border: none; width: 100%; }
@@ -53,11 +53,7 @@
         .btn-danger { background-color: var(--danger); color: white; width: auto; padding: 10px 20px; }
         .btn-danger:hover { background-color: #a93226; }
         
-        .matches-container { max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px; }
-        .match-item { background: #2c2c2c; padding: 15px; border-radius: 6px; border-left: 4px solid var(--home-color); display: flex; flex-direction: column; gap: 10px; }
-        .match-header { font-weight: bold; font-size: 1.1em; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px; }
-        
-        /* Tabelas Responsivas & Hierarquia Vulgo > Nome */
+        /* Tabelas */
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 500px; }
         th, td { padding: 12px; text-align: center; border-bottom: 1px solid #444; }
@@ -66,6 +62,23 @@
         .player-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--highlight); background: #333; flex-shrink: 0; }
         .player-info { display: flex; flex-direction: column; justify-content: center; line-height: 1.2; }
         .realname-text { font-size: 0.7em; color: #aaa; margin-top: 3px; font-weight: normal; }
+        
+        /* 🔥 DESTAQUE JOGO ATUAL 🔥 */
+        .current-match-card { background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%); border: 2px solid var(--highlight); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.6); position: relative;}
+        .match-badge { background: var(--highlight); color: #1a1a1a; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9em; display: inline-block; margin-bottom: 15px; letter-spacing: 1px; }
+        .vs-container { display: flex; justify-content: space-around; align-items: center; margin-bottom: 20px; }
+        .player-side { display: flex; flex-direction: column; align-items: center; width: 40%; position: relative; }
+        .player-side img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; margin-bottom: 10px; background: #333;}
+        .saida-indicator { position: absolute; top: -10px; background: var(--home-color); color: white; font-size: 0.7em; padding: 4px 10px; border-radius: 12px; font-weight: bold; z-index: 2; border: 1px solid #fff;}
+        .vs-text { font-size: 2.5em; font-weight: 900; color: #aaa; font-style: italic; }
+        .vulgo-big { font-size: 1.3em; font-weight: bold; color: white; }
+        
+        /* Lista de Próximos Jogos */
+        .upcoming-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding-right: 5px; }
+        .upcoming-item { background: #2c2c2c; padding: 10px 15px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid #555; }
+        .upcoming-players { display: flex; align-items: center; gap: 10px; flex: 1; justify-content: center;}
+        .tiny-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #888; }
+        .vs-mini { color: #888; font-size: 0.9em; margin: 0 10px; font-weight: bold; }
         
         /* Mata-mata */
         .bo3-match { background: #2c2c2c; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 15px; border: 2px solid #555; position: relative; }
@@ -87,18 +100,19 @@
         .hidden { display: none !important; }
         .text-muted { font-size: 0.85em; color: #aaa; margin-top: 5px; display: block; }
 
-        /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #1a1a1a; }
         ::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
 
-        /* Ajustes específicos para Celular */
         @media (max-width: 600px) {
             .header-top { justify-content: center; text-align: center; }
             h1 { font-size: 1.5em; width: 100%; margin-bottom: 5px; }
             .card { padding: 15px; }
             th, td { padding: 8px 5px; font-size: 0.9em; }
             .player-img { width: 30px; height: 30px; }
+            .vs-container { gap: 5px; }
+            .player-side img { width: 70px; height: 70px; }
+            .vs-text { font-size: 1.8em; }
             .bo3-players { flex-direction: column; gap: 15px; }
             .bo3-player-card { width: 100%; }
             .bo3-score { font-size: 1.5em; }
@@ -107,29 +121,24 @@
             .step-2 { height: 130px; width: 80px; font-size: 1em; }
             .step-3 { height: 90px; width: 80px; font-size: 1em; }
             .podium-player-img { width: 50px; height: 50px; top: -25px; border-width: 2px; }
-            .form-group > * { width: 100%; flex: none; }
+            .upcoming-players { font-size: 0.85em; }
         }
     </style>
 </head>
 <body>
 
-<!-- TELA DE LOGIN -->
 <div id="loginOverlay">
     <div class="login-box">
         <h2 style="margin-bottom: 0;">🎱 SKUNK CHAMPIONS</h2>
         <p class="text-muted" style="margin-top: 5px; letter-spacing: 1px; font-size: 0.8em;">M. CORTELINI AZZOLIN</p>
-        
         <button class="btn-viewer" onclick="entrarComoViewer()">👁️ Apenas Acompanhar</button>
-        
         <div class="divider"></div>
-        
         <input type="text" id="adminUser" placeholder="Usuário Admin">
         <input type="password" id="adminPass" placeholder="Senha">
         <button onclick="entrarComoAdmin()">Entrar como Admin</button>
     </div>
 </div>
 
-<!-- APLICATIVO PRINCIPAL -->
 <div class="container hidden" id="mainApp">
     
     <div class="header-top">
@@ -141,7 +150,6 @@
         <button class="btn-logout" onclick="sairDoSistema()">🚪 Sair</button>
     </div>
 
-    <!-- CAMPEÃO ATUAL -->
     <div class="champion-banner">
         <span style="font-size: 0.85em; color: var(--gold); text-transform: uppercase; font-weight: bold; letter-spacing: 2px;">👑 Atual Campeão 👑</span>
         <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 10px;">
@@ -153,30 +161,28 @@
         </div>
     </div>
 
-    <!-- Abas de Navegação -->
+    <!-- Navegação (3 Abas) -->
     <div class="nav-tabs">
-        <div class="tab active" id="tab-torneio" onclick="alterarAba('torneio')">Torneio Atual</div>
+        <div class="tab active" id="tab-torneio" onclick="alterarAba('torneio')">Classificação</div>
+        <div class="tab" id="tab-jogos" onclick="alterarAba('jogos')">Jogos 🎱</div>
         <div class="tab" id="tab-global" onclick="alterarAba('global')">Estatísticas & Histórico</div>
     </div>
 
-    <!-- ================= CONTEÚDO: TORNEIO ATUAL ================= -->
+    <!-- ================= 1. CLASSIFICAÇÃO (Torneio Atual) ================= -->
     <div id="view-torneio">
         
-        <!-- Fase 1: Cadastro (Admin) -->
         <div class="card admin-only" id="section-cadastro">
-            <h2>1. Cadastrar Jogadores</h2>
-            <p class="text-muted" style="text-align: center; margin-top: 0;">Use o <strong>Nome e Sobrenome</strong> para manter o histórico unificado nas próximas edições.</p>
+            <h2>Cadastrar Jogadores</h2>
             <div class="form-group">
                 <input type="text" id="playerName" placeholder="Nome Completo (Chave)" required style="flex: 1.5;">
                 <input type="text" id="playerVulgo" placeholder="Vulgo" style="flex: 1;">
                 <input type="file" id="playerImgFile" accept="image/*" title="Foto (Opcional)">
-                <button onclick="adicionarJogador()">Adicionar</button>
+                <button onclick="adicionarJogador()" style="width: auto;">Add</button>
             </div>
-            <p style="margin-top: 15px;"><strong>Confirmados:</strong> <span id="listaJogadores">Nenhum</span></p>
+            <p style="margin-top: 10px;"><strong>Confirmados:</strong> <span id="listaJogadores">Nenhum</span></p>
             <button class="btn-start" onclick="iniciarCampeonato()">Iniciar Campeonato</button>
         </div>
 
-        <!-- Tabela Torneio -->
         <div class="card" id="section-tabela">
             <h2>Classificação da Edição</h2>
             <div class="table-responsive">
@@ -187,20 +193,6 @@
             </div>
         </div>
 
-        <!-- Fase 2: Liga -->
-        <div class="card hidden" id="section-liga">
-            <h2>Fase de Liga</h2>
-            <div class="matches-container" id="matchesContainer"></div>
-            <button id="btnIrMataMata" class="btn-start admin-only hidden" onclick="iniciarMataMata()">Fase Concluída! Ir para Semifinais 🏆</button>
-        </div>
-
-        <!-- Fase 3: Mata-Mata -->
-        <div class="card hidden" id="section-matamata">
-            <h2 id="tituloMataMata">Mata-Mata (Melhor de 3)</h2>
-            <div id="containerConfrontos"></div>
-        </div>
-
-        <!-- Fase 4: Pódio -->
         <div class="card hidden" id="section-podio">
             <h2>🏆 FIM DE JOGO 🏆</h2>
             <h3 id="campeaoTexto" style="text-align: center; color: var(--gold); font-size: 2em; margin-bottom: 40px;"></h3>
@@ -208,18 +200,23 @@
             <button class="btn-start admin-only" style="margin-top: 40px;" onclick="iniciarNovaEdicao()">Registrar no Hall da Fama e Iniciar Nova Edição</button>
         </div>
 
-        <!-- Cancelar Edição (Admin) -->
         <div style="text-align: right; margin-top: 20px;" class="admin-only">
-            <button class="btn-danger" onclick="cancelarTorneioAtual()">🛑 Cancelar Edição Atual (Manter Histórico)</button>
+            <button class="btn-danger" onclick="cancelarTorneioAtual()">🛑 Cancelar Edição Atual</button>
         </div>
     </div>
 
-    <!-- ================= CONTEÚDO: ESTATÍSTICAS GLOBAIS ================= -->
+    <!-- ================= 2. ABA DE JOGOS ================= -->
+    <div id="view-jogos" class="hidden">
+        <div class="card" id="jogos-container">
+            <!-- Preenchido via JS (Destaque do Jogo Atual + Lista de Próximos) -->
+        </div>
+    </div>
+
+    <!-- ================= 3. ESTATÍSTICAS E HISTÓRICO ================= -->
     <div id="view-global" class="hidden">
         
         <div class="card">
             <h2>📊 Estatísticas Globais (All-Time)</h2>
-            <p class="text-muted" style="text-align:center;">Soma de todos os campeonatos já realizados.</p>
             <div class="table-responsive">
                 <table>
                     <thead><tr><th style="text-align: left;">Jogador</th><th>J</th><th>V</th><th>D</th><th>Saldo</th><th>Conquistas</th></tr></thead>
@@ -239,12 +236,10 @@
     </div>
 </div>
 
-<!-- INTEGRAÇÃO FIREBASE SDK -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-    // 🔴🔴 CHAVES FIREBASE 🔴🔴
     const firebaseConfig = {
         apiKey: "AIzaSyBustQAV_OBODtdNePDxyyGYezkogqUxBI",
         authDomain: "snuk-champions.firebaseapp.com",
@@ -259,17 +254,12 @@
     const db = getFirestore(app);
     const torneioDoc = doc(db, "sinuca_db", "dados_oficiais");
 
-    // --- SISTEMA DE LOGIN ---
     window.entrarComoAdmin = function() {
         if (document.getElementById('adminUser').value === 'admin' && document.getElementById('adminPass').value === 'admin-snuk') {
             sessionStorage.setItem('sinucaRole', 'admin'); iniciarAppGrafica();
         } else alert('Usuário ou senha incorretos!');
     }
-
-    window.entrarComoViewer = function() {
-        sessionStorage.setItem('sinucaRole', 'viewer'); iniciarAppGrafica();
-    }
-
+    window.entrarComoViewer = function() { sessionStorage.setItem('sinucaRole', 'viewer'); iniciarAppGrafica(); }
     window.sairDoSistema = function() {
         sessionStorage.removeItem('sinucaRole');
         document.getElementById('adminUser').value = ''; document.getElementById('adminPass').value = '';
@@ -280,90 +270,65 @@
         document.getElementById('loginOverlay').classList.add('hidden'); document.getElementById('mainApp').classList.remove('hidden');
         if (sessionStorage.getItem('sinucaRole') === 'viewer') {
             document.body.classList.add('viewer-mode');
-            document.getElementById('userBadge').textContent = '👁️ Visualizador'; document.getElementById('userBadge').style.background = '#555';
+            document.getElementById('userBadge').textContent = '👁️ View'; document.getElementById('userBadge').style.background = '#555';
         } else {
             document.body.classList.remove('viewer-mode'); document.getElementById('userBadge').textContent = '👑 Admin';
         }
-        if (window.state) renderizarInterface();
+        if (window.state) renderInterface();
     }
 
     window.onload = function() { if (sessionStorage.getItem('sinucaRole')) iniciarAppGrafica(); }
 
-    // --- ESTADO INICIAL ---
     let defaultState = {
-        torneio: {
-            phase: 'cadastro', players: [], matches: [],
-            knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } },
-            podium: { first: null, second: null, third: null }
-        },
+        torneio: { phase: 'cadastro', players: [], matches: [], knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } }, podium: { first: null, second: null, third: null } },
         globalStats: {}, hallOfFame: []
     };
 
     window.state = null; let abaAtual = 'torneio';
 
-    // --- FIREBASE SYNC ---
     onSnapshot(torneioDoc, (docSnap) => {
         if (docSnap.exists()) window.state = docSnap.data();
         else { setDoc(torneioDoc, defaultState); window.state = defaultState; }
-        if (sessionStorage.getItem('sinucaRole')) renderizarInterface();
+        if (sessionStorage.getItem('sinucaRole')) renderInterface();
     });
 
     window.salvarDados = async function() {
-        if (sessionStorage.getItem('sinucaRole') !== 'admin') return alert("Apenas admins podem salvar.");
-        try { await setDoc(torneioDoc, window.state); } catch (e) { alert("Erro ao sincronizar."); }
+        if (sessionStorage.getItem('sinucaRole') !== 'admin') return alert("Apenas admins.");
+        try { await setDoc(torneioDoc, window.state); } catch (e) { alert("Erro ao salvar."); }
     }
 
-    // --- NAVEGAÇÃO E CONTROLE GERAL ---
     window.alterarAba = function(aba) {
         abaAtual = aba;
-        document.getElementById('tab-torneio').classList.remove('active'); document.getElementById('tab-global').classList.remove('active');
-        document.getElementById('view-torneio').classList.add('hidden'); document.getElementById('view-global').classList.add('hidden');
-        document.getElementById(`tab-${aba}`).classList.add('active'); document.getElementById(`view-${aba}`).classList.remove('hidden');
-        renderizarInterface();
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(`tab-${aba}`).classList.add('active');
+        ['torneio', 'jogos', 'global'].forEach(id => document.getElementById(`view-${id}`).classList.add('hidden'));
+        document.getElementById(`view-${aba}`).classList.remove('hidden');
+        renderInterface();
     }
 
     window.cancelarTorneioAtual = function() {
-        if(confirm("Tem certeza que deseja cancelar a EDIÇÃO ATUAL? Tudo desse campeonato sumirá, mas o Hall da Fama ficará intacto.")) {
-            window.state.torneio = {
-                phase: 'cadastro', players: [], matches: [],
-                knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } },
-                podium: { first: null, second: null, third: null }
-            };
-            window.salvarDados();
+        if(confirm("Deseja cancelar a EDIÇÃO ATUAL? Tudo desse campeonato sumirá.")) {
+            window.state.torneio = defaultState.torneio; window.salvarDados();
         }
     }
 
-    // --- CADASTRO (PK = NOME) ---
     function registrarNoGlobal(p) {
-        if (!window.state.globalStats[p.name]) {
-            window.state.globalStats[p.name] = { vulgo: p.vulgo, img: p.img, matches: 0, wins: 0, losses: 0, ballsBalance: 0, achievements: [] };
-        } else {
-            if(p.img) window.state.globalStats[p.name].img = p.img;
-            if(p.vulgo) window.state.globalStats[p.name].vulgo = p.vulgo;
-        }
+        if (!window.state.globalStats[p.name]) window.state.globalStats[p.name] = { vulgo: p.vulgo, img: p.img, matches: 0, wins: 0, losses: 0, ballsBalance: 0, achievements: [] };
+        else { if(p.img) window.state.globalStats[p.name].img = p.img; if(p.vulgo) window.state.globalStats[p.name].vulgo = p.vulgo; }
     }
 
     window.adicionarJogador = function() {
-        const name = document.getElementById('playerName').value.trim(); // PK
+        const name = document.getElementById('playerName').value.trim();
         let vulgo = document.getElementById('playerVulgo').value.trim();
-        const fileInput = document.getElementById('playerImgFile');
-        const file = fileInput.files[0];
-        
-        if (!name) return alert("O Nome Completo é obrigatório para manter o histórico!");
+        const fileInput = document.getElementById('playerImgFile'); const file = fileInput.files[0];
+        if (!name) return alert("O Nome Completo é obrigatório!");
         if (window.state.torneio.players.find(p => p.name === name)) return alert("Jogador já está na edição atual!");
-
-        // Se não escreveu Vulgo, tenta puxar do histórico
-        if (!vulgo && window.state.globalStats[name] && window.state.globalStats[name].vulgo) {
-            vulgo = window.state.globalStats[name].vulgo;
-        }
-        // Se ainda for vazio, usa o primeiro nome
+        if (!vulgo && window.state.globalStats[name] && window.state.globalStats[name].vulgo) vulgo = window.state.globalStats[name].vulgo;
         if (!vulgo) vulgo = name.split(' ')[0];
 
         if (file) {
-            const r = new FileReader();
-            r.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
+            const r = new FileReader(); r.onload = function(e) {
+                const img = new Image(); img.onload = function() {
                     const canvas = document.createElement('canvas'); const w = 150; canvas.width = w; canvas.height = img.height * (w / img.width);
                     canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
                     salvarNovoJogador(name, vulgo, canvas.toDataURL('image/jpeg', 0.7));
@@ -382,7 +347,6 @@
         window.salvarDados(); 
     }
 
-    // --- LIGA ---
     window.iniciarCampeonato = function() {
         let p = [...window.state.torneio.players]; if (p.length < 4) return alert("Mínimo 4!");
         if (p.length % 2 !== 0) p.push({ name: 'FOLGA', vulgo: 'FOLGA' }); 
@@ -402,9 +366,9 @@
 
     window.registrarResultadoLiga = function(id) {
         const m = window.state.torneio.matches.find(x => x.id === id);
-        const wName = document.getElementById(`winner-${id}`).value; // PK vem no value
+        const wName = document.getElementById(`winner-${id}`).value;
         const b = parseInt(document.getElementById(`balls-${id}`).value);
-        if (!wName || isNaN(b) || b < 0) return alert("Erro");
+        if (!wName || isNaN(b) || b < 0) return alert("Erro nos dados!");
 
         const lName = wName === m.pHome ? m.pAway : m.pHome;
         const w = window.state.torneio.players.find(p => p.name === wName);
@@ -422,7 +386,6 @@
         m.completed = true; window.salvarDados();
     }
 
-    // --- MATA-MATA ---
     window.iniciarMataMata = function() {
         window.state.torneio.players.sort((a, b) => b.points !== a.points ? b.points - a.points : (b.wins !== a.wins ? b.wins - a.wins : b.ballsBalance - a.ballsBalance));
         const t4 = window.state.torneio.players.slice(0, 4); let k = window.state.torneio.knockout;
@@ -459,49 +422,91 @@
 
     window.resetarTudoHard = function() { if (prompt("Digite 'APAGAR' para zerar tudo:") === "APAGAR") { window.state = defaultState; window.salvarDados(); } }
 
-    // --- RENDERIZAÇÃO E HIERARQUIA VULGO > NOME ---
-    function formatarNome(p) {
-        let v = p.vulgo || p.name;
-        return `<div class="player-info"><span style="font-size:1.1em; font-weight:bold;">${v}</span><span class="realname-text">${p.name}</span></div>`;
-    }
+    function formatarNome(p) { return `<div class="player-info"><span style="font-size:1.1em; font-weight:bold;">${p.vulgo || p.name}</span><span class="realname-text">${p.name}</span></div>`; }
 
-    function renderizarCampeaoAtual() {
-        const vulgoText = document.getElementById('championVulgoText');
-        const nameText = document.getElementById('championNameText');
-        const img = document.getElementById('championImg');
-        
-        if (window.state.hallOfFame && window.state.hallOfFame.length > 0) {
-            const ultimo = window.state.hallOfFame[window.state.hallOfFame.length - 1];
-            vulgoText.textContent = ultimo.podium.first.vulgo || ultimo.podium.first.name;
-            nameText.textContent = ultimo.podium.first.name;
-            img.src = ultimo.podium.first.img;
-        } else {
-            vulgoText.textContent = "Fernando";
-            nameText.textContent = "Fernando";
-            img.src = "https://ui-avatars.com/api/?name=Fernando&background=FFD700&color=000";
-        }
-    }
-
-    function renderizarInterface() {
+    function renderInterface() {
         if (!window.state) return;
-        renderizarCampeaoAtual();
+        
+        // 1. Campeão Atual
+        const vTxt = document.getElementById('championVulgoText'), nTxt = document.getElementById('championNameText'), img = document.getElementById('championImg');
+        if (window.state.hallOfFame && window.state.hallOfFame.length > 0) {
+            const u = window.state.hallOfFame[window.state.hallOfFame.length - 1];
+            vTxt.textContent = u.podium.first.vulgo || u.podium.first.name; nTxt.textContent = u.podium.first.name; img.src = u.podium.first.img;
+        } else {
+            vTxt.textContent = "Fernando"; nTxt.textContent = "Fernando"; img.src = "https://ui-avatars.com/api/?name=Fernando&background=FFD700&color=000";
+        }
 
+        let t = window.state.torneio;
+
+        // 2. Renderizar Global (Histórico)
         if (abaAtual === 'global') {
-            const tbody = document.getElementById('globalStatsBody'); tbody.innerHTML = '';
-            let s = Object.entries(window.state.globalStats).map(([name, data]) => ({ name, ...data })).sort((a,b) => b.wins - a.wins);
-            s.forEach(p => tbody.innerHTML += `<tr><td class="player-cell"><img src="${p.img}" class="player-img">${formatarNome(p)}</td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td><td><div class="achievements">${p.achievements.map(b=>`<span class="badge">${b}</span>`).join('')}</div></td></tr>`);
-            
+            const tb = document.getElementById('globalStatsBody'); tb.innerHTML = '';
+            Object.entries(window.state.globalStats).map(([name, d]) => ({ name, ...d })).sort((a,b) => b.wins - a.wins).forEach(p => tb.innerHTML += `<tr><td class="player-cell"><img src="${p.img}" class="player-img">${formatarNome(p)}</td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td><td><div class="achievements">${p.achievements.map(b=>`<span class="badge">${b}</span>`).join('')}</div></td></tr>`);
             const hof = document.getElementById('hallOfFameContainer'); hof.innerHTML = window.state.hallOfFame.length ? '' : '<p style="text-align:center; color:#888;">Nenhum campeonato finalizado.</p>';
-            [...window.state.hallOfFame].reverse().forEach((ed, i) => {
-                hof.innerHTML += `<div style="background:#222; padding:15px; border-radius:8px; border-left:4px solid var(--gold);"><h3 style="margin-top:0; color:var(--gold);">Edição ${window.state.hallOfFame.length - i} <small style="color:#888; font-size:0.6em;">(${ed.date})</small></h3><div style="display:flex; justify-content:space-around; align-items:flex-end; gap:10px; text-align:center;"><div style="width:30%;"><img src="${ed.podium.second.img}" style="width:40px; border-radius:50%; border:2px solid var(--silver);"><br><span style="font-size:0.9em;">2º ${ed.podium.second.vulgo || ed.podium.second.name}</span><br><span class="realname-text">${ed.podium.second.name}</span></div><div style="width:40%;"><img src="${ed.podium.first.img}" style="width:60px; border-radius:50%; border:3px solid var(--gold);"><br><strong>🏆 ${ed.podium.first.vulgo || ed.podium.first.name}</strong><br><span class="realname-text">${ed.podium.first.name}</span></div><div style="width:30%;"><img src="${ed.podium.third.img}" style="width:40px; border-radius:50%; border:2px solid var(--bronze);"><br><span style="font-size:0.9em;">3º ${ed.podium.third.vulgo || ed.podium.third.name}</span><br><span class="realname-text">${ed.podium.third.name}</span></div></div></div>`;
-            });
+            [...window.state.hallOfFame].reverse().forEach((ed, i) => { hof.innerHTML += `<div style="background:#222; padding:15px; border-radius:8px; border-left:4px solid var(--gold);"><h3 style="margin-top:0; color:var(--gold);">Edição ${window.state.hallOfFame.length - i} <small style="color:#888; font-size:0.6em;">(${ed.date})</small></h3><div style="display:flex; justify-content:space-around; align-items:flex-end; gap:10px; text-align:center;"><div style="width:30%;"><img src="${ed.podium.second.img}" style="width:40px; border-radius:50%; border:2px solid var(--silver);"><br><span style="font-size:0.9em;">2º ${ed.podium.second.vulgo || ed.podium.second.name}</span><br><span class="realname-text">${ed.podium.second.name}</span></div><div style="width:40%;"><img src="${ed.podium.first.img}" style="width:60px; border-radius:50%; border:3px solid var(--gold);"><br><strong>🏆 ${ed.podium.first.vulgo || ed.podium.first.name}</strong><br><span class="realname-text">${ed.podium.first.name}</span></div><div style="width:30%;"><img src="${ed.podium.third.img}" style="width:40px; border-radius:50%; border:2px solid var(--bronze);"><br><span style="font-size:0.9em;">3º ${ed.podium.third.vulgo || ed.podium.third.name}</span><br><span class="realname-text">${ed.podium.third.name}</span></div></div></div>`; });
             return;
         }
 
-        let t = window.state.torneio; 
+        // 3. Renderizar ABA JOGOS 🎱
+        if (abaAtual === 'jogos') {
+            const container = document.getElementById('jogos-container');
+            container.innerHTML = '';
+
+            if (t.phase === 'cadastro') {
+                container.innerHTML = `<h3 style="text-align:center; color:#aaa; margin:40px 0;">O campeonato ainda não começou!</h3>`;
+            } else if (t.phase === 'liga') {
+                let pendentes = t.matches.filter(m => !m.completed);
+                if (pendentes.length > 0) {
+                    // Destaque do Jogo Atual
+                    let curr = pendentes[0];
+                    let hP = t.players.find(x => x.name === curr.pHome), aP = t.players.find(x => x.name === curr.pAway);
+                    container.innerHTML += `
+                        <div class="current-match-card">
+                            <div class="match-badge">🔥 JOGO ATUAL - TURNO ${curr.turno} 🔥</div>
+                            <div class="vs-container">
+                                <div class="player-side">
+                                    <div class="saida-indicator">Saída</div>
+                                    <img src="${hP.img}"><span class="vulgo-big">${hP.vulgo || hP.name}</span><span class="realname-text">${hP.name}</span>
+                                </div>
+                                <div class="vs-text">VS</div>
+                                <div class="player-side">
+                                    <img src="${aP.img}"><span class="vulgo-big">${aP.vulgo || aP.name}</span><span class="realname-text">${aP.name}</span>
+                                </div>
+                            </div>
+                            <div class="form-group admin-only" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;">
+                                <select id="winner-${curr.id}" style="flex:1;"><option value="">Vencedor...</option><option value="${curr.pHome}">${hP.vulgo || hP.name}</option><option value="${curr.pAway}">${aP.vulgo || aP.name}</option></select>
+                                <input type="number" id="balls-${curr.id}" placeholder="Bolas restantes na mesa" min="1" max="7" style="flex:1;">
+                                <button onclick="registrarResultadoLiga(${curr.id})" style="flex:1;">Salvar Resultado</button>
+                            </div>
+                        </div>
+                    `;
+                    // Próximos Jogos
+                    if (pendentes.length > 1) {
+                        container.innerHTML += `<h3>Próximos Confrontos (${pendentes.length - 1})</h3><div class="upcoming-list" id="upcomingList"></div>`;
+                        const upList = document.getElementById('upcomingList');
+                        pendentes.slice(1).forEach(m => {
+                            let hp = t.players.find(x => x.name === m.pHome), ap = t.players.find(x => x.name === m.pAway);
+                            upList.innerHTML += `<div class="upcoming-item"><div class="upcoming-players"><span style="color:#aaa; font-size:0.8em; margin-right:10px;">T${m.turno}</span><img src="${hp.img}" class="tiny-avatar"> <strong>${hp.vulgo || hp.name}</strong> <span class="vs-mini">X</span> <strong>${ap.vulgo || ap.name}</strong> <img src="${ap.img}" class="tiny-avatar"></div></div>`;
+                        });
+                    }
+                } else {
+                    container.innerHTML = `<h3 style="text-align:center; color:#2ecc71; margin:40px 0;">Todos os jogos da Liga finalizados!</h3><button class="btn-start admin-only" onclick="iniciarMataMata()">Ir para Semifinais 🏆</button>`;
+                }
+            } else if (['semis', 'terceiro', 'final'].includes(t.phase)) {
+                container.innerHTML = `<h2 style="color:var(--highlight);">Mata-Mata (Melhor de 3)</h2>`;
+                let k = t.knockout;
+                let bo3 = (tit, id, d) => !d.p1 ? '' : `<div class="bo3-match"><h3>${tit}</h3><div class="bo3-players"><div class="bo3-player-card"><img src="${d.p1.img}"><div class="player-info"><span style="font-size:1.1em; font-weight:bold;">${d.p1.vulgo || d.p1.name}</span><span class="realname-text">${d.p1.name}</span></div>${d.completed?'':`<button class="admin-only" onclick="registrarVitoriaBo3('${id}', 1)">Venceu</button>`}</div><div class="bo3-score">${d.winsP1} x ${d.winsP2}</div><div class="bo3-player-card"><img src="${d.p2.img}"><div class="player-info"><span style="font-size:1.1em; font-weight:bold;">${d.p2.vulgo || d.p2.name}</span><span class="realname-text">${d.p2.name}</span></div>${d.completed?'':`<button class="admin-only" onclick="registrarVitoriaBo3('${id}', 2)">Venceu</button>`}</div></div>${d.completed?`<div style="color:var(--highlight); margin-top:10px;">Vencedor: ${d.winner.vulgo || d.winner.name}</div>`:''}</div>`;
+                if (t.phase === 'semis') { container.innerHTML += bo3('Semifinal 1', 'semi1', k.semi1) + bo3('Semifinal 2', 'semi2', k.semi2); }
+                else if (t.phase === 'terceiro') container.innerHTML += bo3('3º Lugar', 'terceiro', k.terceiro); else container.innerHTML += bo3('Final', 'final', k.final);
+            } else if (t.phase === 'podio') {
+                container.innerHTML = `<h3 style="text-align:center; margin:40px 0;">Campeonato finalizado! Vá para a aba Classificação para ver o Pódio.</h3>`;
+            }
+            return;
+        }
+
+        // 4. Renderizar ABA CLASSIFICAÇÃO (Torneio Atual)
         t.players.sort((a, b) => b.points !== a.points ? b.points - a.points : (b.wins !== a.wins ? b.wins - a.wins : b.ballsBalance - a.ballsBalance));
-        
-        ['cadastro', 'tabela', 'liga', 'matamata', 'podio'].forEach(id => document.getElementById('section-'+id).classList.add('hidden'));
+        ['cadastro', 'tabela', 'podio'].forEach(id => document.getElementById('section-'+id).classList.add('hidden'));
 
         const tbody = document.querySelector('#standingsTable tbody'); tbody.innerHTML = '';
         t.players.forEach((p, i) => tbody.innerHTML += `<tr style="${t.phase!=='cadastro'&&i<4?'background:rgba(46,204,113,0.1)':''}"><td>${i+1}º</td><td class="player-cell"><img src="${p.img}" class="player-img">${formatarNome(p)}</td><td><strong>${p.points}</strong></td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td></tr>`);
@@ -509,23 +514,8 @@
         if (t.phase === 'cadastro') {
             document.getElementById('section-cadastro').classList.remove('hidden'); document.getElementById('section-tabela').classList.remove('hidden');
             document.getElementById('listaJogadores').innerHTML = t.players.map(p => `<span class="badge">${p.vulgo || p.name}</span>`).join(' ') || 'Nenhum';
-        } else if (t.phase === 'liga') {
-            document.getElementById('section-tabela').classList.remove('hidden'); document.getElementById('section-liga').classList.remove('hidden');
-            const c = document.getElementById('matchesContainer'); c.innerHTML = ''; let pCount = 0;
-            t.matches.forEach(m => {
-                if (m.completed) return; pCount++;
-                let homeP = t.players.find(x => x.name === m.pHome); let awayP = t.players.find(x => x.name === m.pAway);
-                let homeV = homeP ? (homeP.vulgo || homeP.name) : m.pHome; let awayV = awayP ? (awayP.vulgo || awayP.name) : m.pAway;
-                
-                c.innerHTML += `<div class="match-item"><div class="match-header"><span>Turno ${m.turno}</span><span><strong style="color:var(--home-color)">${homeV}</strong> (Casa) vs ${awayV}</span></div><div class="form-group admin-only"><select id="winner-${m.id}" style="flex:1;"><option value="">Vencedor...</option><option value="${m.pHome}">${homeV}</option><option value="${m.pAway}">${awayV}</option></select><input type="number" id="balls-${m.id}" placeholder="Bolas restantes" min="1" max="7" style="flex:1;"><button onclick="registrarResultadoLiga(${m.id})">Salvar</button></div></div>`;
-            });
-            pCount === 0 ? (c.innerHTML = `<h3 style="text-align:center; color:#2ecc71;">Fase Finalizada!</h3>`, document.getElementById('btnIrMataMata').classList.remove('hidden')) : document.getElementById('btnIrMataMata').classList.add('hidden');
-        } else if (['semis', 'terceiro', 'final'].includes(t.phase)) {
-            document.getElementById('section-matamata').classList.remove('hidden');
-            const c = document.getElementById('containerConfrontos'); c.innerHTML = ''; let k = t.knockout;
-            let bo3 = (tit, id, d) => !d.p1 ? '' : `<div class="bo3-match"><h3>${tit}</h3><div class="bo3-players"><div class="bo3-player-card"><img src="${d.p1.img}"><div class="player-info"><span style="font-size:1.1em; font-weight:bold;">${d.p1.vulgo || d.p1.name}</span><span class="realname-text">${d.p1.name}</span></div>${d.completed?'':`<button class="admin-only" onclick="registrarVitoriaBo3('${id}', 1)">Venceu</button>`}</div><div class="bo3-score">${d.winsP1} x ${d.winsP2}</div><div class="bo3-player-card"><img src="${d.p2.img}"><div class="player-info"><span style="font-size:1.1em; font-weight:bold;">${d.p2.vulgo || d.p2.name}</span><span class="realname-text">${d.p2.name}</span></div>${d.completed?'':`<button class="admin-only" onclick="registrarVitoriaBo3('${id}', 2)">Venceu</button>`}</div></div>${d.completed?`<div style="color:var(--highlight); margin-top:10px;">Vencedor: ${d.winner.vulgo || d.winner.name}</div>`:''}</div>`;
-            if (t.phase === 'semis') { c.innerHTML += bo3('Semifinal 1', 'semi1', k.semi1) + bo3('Semifinal 2', 'semi2', k.semi2); }
-            else if (t.phase === 'terceiro') c.innerHTML += bo3('3º Lugar', 'terceiro', k.terceiro); else c.innerHTML += bo3('Final', 'final', k.final);
+        } else if (t.phase === 'liga' || ['semis', 'terceiro', 'final'].includes(t.phase)) {
+            document.getElementById('section-tabela').classList.remove('hidden');
         } else if (t.phase === 'podio') {
             document.getElementById('section-podio').classList.remove('hidden'); document.getElementById('campeaoTexto').textContent = `${t.podium.first.vulgo || t.podium.first.name} É O CAMPEÃO! 🏆`;
             document.getElementById('podiumContainer').innerHTML = `<div class="podium-step step-2"><img src="${t.podium.second.img}" class="podium-player-img" style="border-color:var(--silver)"><span style="font-size:0.7em;">2º ${t.podium.second.vulgo || t.podium.second.name}</span></div><div class="podium-step step-1"><img src="${t.podium.first.img}" class="podium-player-img" style="border-color:var(--gold); width:90px; height:90px; top:-50px;"><span style="font-size:0.7em;">1º ${t.podium.first.vulgo || t.podium.first.name}</span></div><div class="podium-step step-3"><img src="${t.podium.third.img}" class="podium-player-img" style="border-color:var(--bronze)"><span style="font-size:0.7em;">3º ${t.podium.third.vulgo || t.podium.third.name}</span></div>`;
