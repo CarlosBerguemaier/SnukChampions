@@ -11,21 +11,36 @@
             --text-light: #f4f4f4; --highlight: #f39c12; --danger: #c0392b;
             --gold: #FFD700; --silver: #C0C0C0; --bronze: #CD7F32; --home-color: #3498db;
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-light); margin: 0; padding: 20px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-light); margin: 0; padding: 15px; }
         h1, h2 { text-align: center; color: var(--highlight); margin-top: 0; }
         .container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
         
+        /* Sistema de Permissões */
+        body.viewer-mode .admin-only { display: none !important; }
+
+        /* Login Screen */
+        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); display: flex; justify-content: center; align-items: center; z-index: 10000; padding: 20px; box-sizing: border-box; }
+        .login-box { background-color: var(--panel-bg); padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.8); border-top: 4px solid var(--highlight); width: 100%; max-width: 350px; display: flex; flex-direction: column; gap: 15px; text-align: center; }
+        .login-box input { padding: 12px; font-size: 1.1em; text-align: center; width: 100%; box-sizing: border-box; }
+        .btn-viewer { background-color: #555; margin-bottom: 10px; }
+        .btn-viewer:hover { background-color: #777; }
+        .divider { border-top: 1px solid #444; margin: 10px 0; position: relative; }
+        .divider::after { content: "OU"; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--panel-bg); padding: 0 10px; color: #888; font-size: 0.8em; }
+
+        /* Campeão Atual Banner */
+        .champion-banner { background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%); border: 2px solid var(--gold); border-radius: 8px; padding: 15px; text-align: center; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.15); margin-bottom: 10px; }
+        
         /* Navegação */
-        .nav-tabs { display: flex; gap: 10px; margin-bottom: 10px; }
-        .tab { flex: 1; padding: 15px; text-align: center; background: #333; cursor: pointer; border-radius: 8px; font-weight: bold; transition: 0.3s; }
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+        .tab { flex: 1; min-width: 120px; padding: 12px; text-align: center; background: #333; cursor: pointer; border-radius: 8px; font-weight: bold; transition: 0.3s; }
         .tab.active { background: var(--green-table); color: white; }
         .tab:hover:not(.active) { background: #444; }
 
         .card { background-color: var(--panel-bg); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.5); border-top: 4px solid var(--green-table); }
         .form-group { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; flex-wrap: wrap; }
-        input, select, button { padding: 10px; border-radius: 4px; border: 1px solid #444; background: #333; color: white; }
-        input[type="file"] { flex: 1; min-width: 250px; background: #222; cursor: pointer; }
-        button { background-color: var(--green-table); cursor: pointer; font-weight: bold; transition: 0.2s; border: none; }
+        input, select, button { padding: 10px; border-radius: 4px; border: 1px solid #444; background: #333; color: white; box-sizing: border-box; }
+        input[type="file"] { flex: 1; min-width: 200px; background: #222; cursor: pointer; }
+        button { background-color: var(--green-table); cursor: pointer; font-weight: bold; transition: 0.2s; border: none; width: 100%; }
         button:hover { background-color: #15803e; }
         .btn-start { background-color: var(--highlight); color: #1a1a1a; width: 100%; font-size: 1.1em; padding: 15px; margin-top: 10px; }
         .btn-start:hover { background-color: #d68910; }
@@ -33,20 +48,24 @@
         
         .matches-container { max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px; }
         .match-item { background: #2c2c2c; padding: 15px; border-radius: 6px; border-left: 4px solid var(--home-color); display: flex; flex-direction: column; gap: 10px; }
-        .match-header { font-weight: bold; font-size: 1.1em; display: flex; justify-content: space-between; align-items: center; }
+        .match-header { font-weight: bold; font-size: 1.1em; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        /* Tabelas Responsivas */
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 500px; }
         th, td { padding: 12px; text-align: center; border-bottom: 1px solid #444; }
         th { background-color: var(--green-table); }
         .player-cell { display: flex; align-items: center; gap: 10px; text-align: left; }
-        .player-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--highlight); background: #333; }
+        .player-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--highlight); background: #333; flex-shrink: 0; }
         
+        /* Mata-mata */
         .bo3-match { background: #2c2c2c; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 15px; border: 2px solid #555; position: relative; }
         .bo3-score { font-size: 2em; font-weight: bold; margin: 15px 0; color: var(--highlight); }
         .bo3-players { display: flex; justify-content: space-around; align-items: center; font-size: 1.2em; }
-        .bo3-player-card { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 30%; position: relative; }
+        .bo3-player-card { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 35%; position: relative; }
         .bo3-player-card img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #555; }
         
+        /* Pódio */
         .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 10px; height: 300px; margin-top: 30px; }
         .podium-step { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; color: #1a1a1a; font-weight: bold; font-size: 1.5em; border-radius: 8px 8px 0 0; position: relative; }
         .step-2 { height: 180px; width: 120px; background-color: var(--silver); }
@@ -54,25 +73,64 @@
         .step-3 { height: 130px; width: 120px; background-color: var(--bronze); }
         .podium-player-img { width: 70px; height: 70px; border-radius: 50%; position: absolute; top: -40px; border: 4px solid white; background: #333; object-fit: cover;}
         
-        .achievements { font-size: 0.8em; display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px; }
-        .badge { background: #444; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--highlight); }
-        
+        .achievements { font-size: 0.8em; display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px; justify-content: center;}
+        .badge { background: #444; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--highlight); white-space: nowrap; }
         .hidden { display: none !important; }
         .text-muted { font-size: 0.85em; color: #aaa; margin-top: 5px; display: block; }
-        ::-webkit-scrollbar { width: 8px; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #1a1a1a; }
         ::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
-        
-        /* Loading Overlay */
-        #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 9999; color: var(--highlight); font-size: 1.5em; font-weight: bold; }
+
+        /* Ajustes específicos para Celular */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.5em; }
+            .card { padding: 15px; }
+            th, td { padding: 8px 5px; font-size: 0.9em; }
+            .player-img { width: 30px; height: 30px; }
+            .bo3-players { flex-direction: column; gap: 15px; }
+            .bo3-player-card { width: 100%; }
+            .bo3-score { font-size: 1.5em; }
+            .podium-container { height: 220px; gap: 5px; }
+            .step-1 { height: 180px; width: 90px; font-size: 1.2em; }
+            .step-2 { height: 130px; width: 80px; font-size: 1em; }
+            .step-3 { height: 90px; width: 80px; font-size: 1em; }
+            .podium-player-img { width: 50px; height: 50px; top: -25px; border-width: 2px; }
+            .form-group > * { width: 100%; flex: none; }
+        }
     </style>
 </head>
 <body>
 
-<div id="loadingOverlay">Conectando ao servidor... 🎱</div>
+<!-- TELA DE LOGIN -->
+<div id="loginOverlay">
+    <div class="login-box">
+        <h2 style="margin-bottom: 0;">🎱 Copa Sinuca Pro</h2>
+        <p class="text-muted" style="margin-top: 0;">Acesso ao Sistema</p>
+        
+        <button class="btn-viewer" onclick="entrarComoViewer()">👁️ Apenas Acompanhar</button>
+        
+        <div class="divider"></div>
+        
+        <input type="text" id="adminUser" placeholder="Usuário Admin">
+        <input type="password" id="adminPass" placeholder="Senha">
+        <button onclick="entrarComoAdmin()">Entrar como Admin</button>
+    </div>
+</div>
 
-<div class="container">
-    <h1>🎱 Copa Sinuca Pro</h1>
+<!-- APLICATIVO PRINCIPAL -->
+<div class="container hidden" id="mainApp">
+    <h1>🎱 Copa Sinuca Pro <span id="userBadge" style="font-size: 0.5em; vertical-align: middle;" class="badge"></span></h1>
+
+    <!-- CAMPEÃO ATUAL -->
+    <div class="champion-banner">
+        <span style="font-size: 0.85em; color: var(--gold); text-transform: uppercase; font-weight: bold; letter-spacing: 2px;">👑 Atual Campeão 👑</span>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 10px;">
+            <img id="championImg" src="" alt="Campeão" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid var(--gold); object-fit: cover;">
+            <h2 id="championNameText" style="margin: 0; color: white;">Carregando...</h2>
+        </div>
+    </div>
 
     <!-- Abas de Navegação -->
     <div class="nav-tabs">
@@ -83,8 +141,8 @@
     <!-- ================= CONTEÚDO: TORNEIO ATUAL ================= -->
     <div id="view-torneio">
         
-        <!-- Fase 1: Cadastro -->
-        <div class="card" id="section-cadastro">
+        <!-- Fase 1: Cadastro (Admin) -->
+        <div class="card admin-only" id="section-cadastro">
             <h2>1. Cadastrar Jogadores</h2>
             <div class="form-group">
                 <input type="text" id="playerName" placeholder="Nome do Jogador" required>
@@ -98,17 +156,19 @@
         <!-- Tabela Torneio -->
         <div class="card" id="section-tabela">
             <h2>Classificação da Edição</h2>
-            <table id="standingsTable">
-                <thead><tr><th>Pos</th><th style="text-align: left;">Jogador</th><th>Pts</th><th>J</th><th>V</th><th>D</th><th>Saldo</th></tr></thead>
-                <tbody></tbody>
-            </table>
+            <div class="table-responsive">
+                <table id="standingsTable">
+                    <thead><tr><th>Pos</th><th style="text-align: left;">Jogador</th><th>Pts</th><th>J</th><th>V</th><th>D</th><th>Saldo</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
 
         <!-- Fase 2: Liga -->
         <div class="card hidden" id="section-liga">
             <h2>Fase de Liga</h2>
             <div class="matches-container" id="matchesContainer"></div>
-            <button id="btnIrMataMata" class="btn-start hidden" onclick="iniciarMataMata()">Fase Concluída! Ir para Semifinais 🏆</button>
+            <button id="btnIrMataMata" class="btn-start admin-only hidden" onclick="iniciarMataMata()">Fase Concluída! Ir para Semifinais 🏆</button>
         </div>
 
         <!-- Fase 3: Mata-Mata -->
@@ -122,7 +182,7 @@
             <h2>🏆 FIM DE JOGO 🏆</h2>
             <h3 id="campeaoTexto" style="text-align: center; color: var(--gold); font-size: 2em; margin-bottom: 40px;"></h3>
             <div class="podium-container" id="podiumContainer"></div>
-            <button class="btn-start" style="margin-top: 40px;" onclick="iniciarNovaEdicao()">Registrar no Hall da Fama e Iniciar Nova Edição</button>
+            <button class="btn-start admin-only" style="margin-top: 40px;" onclick="iniciarNovaEdicao()">Registrar no Hall da Fama e Iniciar Nova Edição</button>
         </div>
     </div>
 
@@ -132,10 +192,12 @@
         <div class="card">
             <h2>📊 Estatísticas Globais (All-Time)</h2>
             <p class="text-muted" style="text-align:center;">Soma de todos os campeonatos já realizados.</p>
-            <table>
-                <thead><tr><th style="text-align: left;">Jogador</th><th>J</th><th>V</th><th>D</th><th>Saldo Total</th><th>Conquistas</th></tr></thead>
-                <tbody id="globalStatsBody"></tbody>
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <thead><tr><th style="text-align: left;">Jogador</th><th>J</th><th>V</th><th>D</th><th>Saldo</th><th>Conquistas</th></tr></thead>
+                    <tbody id="globalStatsBody"></tbody>
+                </table>
+            </div>
         </div>
 
         <div class="card" style="margin-top: 20px;">
@@ -143,19 +205,18 @@
             <div id="hallOfFameContainer" style="display: flex; flex-direction: column; gap: 15px;"></div>
         </div>
 
-        <div style="text-align: right;">
+        <div style="text-align: right;" class="admin-only">
             <button class="btn-danger" onclick="resetarTudoHard()">⚠️ Resetar TUDO (Torneio e Histórico)</button>
         </div>
     </div>
-
 </div>
 
-<!-- INTEGRAÇÃO FIREBASE SDK (V10 Modular) -->
+<!-- INTEGRAÇÃO FIREBASE SDK -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-    // 🔴🔴 COLOQUE SUAS CHAVES DO FIREBASE AQUI 🔴🔴
+    // 🔴🔴 LEMBRE-SE DE COLAR SUAS CHAVES AQUI 🔴🔴
     const firebaseConfig = {
         apiKey: "COLE_SUA_API_KEY_AQUI",
         authDomain: "seu-projeto.firebaseapp.com",
@@ -169,429 +230,247 @@
     const db = getFirestore(app);
     const torneioDoc = doc(db, "sinuca_db", "dados_oficiais");
 
-    // Estado padrão caso o banco esteja vazio
+    // --- SISTEMA DE LOGIN ---
+    window.entrarComoAdmin = function() {
+        if (document.getElementById('adminUser').value === 'admin' && document.getElementById('adminPass').value === 'admin-snuk') {
+            sessionStorage.setItem('sinucaRole', 'admin'); iniciarAppGrafica();
+        } else alert('Usuário ou senha incorretos!');
+    }
+
+    window.entrarComoViewer = function() {
+        sessionStorage.setItem('sinucaRole', 'viewer'); iniciarAppGrafica();
+    }
+
+    function iniciarAppGrafica() {
+        document.getElementById('loginOverlay').classList.add('hidden');
+        document.getElementById('mainApp').classList.remove('hidden');
+        
+        if (sessionStorage.getItem('sinucaRole') === 'viewer') {
+            document.body.classList.add('viewer-mode');
+            document.getElementById('userBadge').textContent = '👁️ Visualizador';
+            document.getElementById('userBadge').style.background = '#555';
+        } else {
+            document.body.classList.remove('viewer-mode');
+            document.getElementById('userBadge').textContent = '👑 Admin';
+        }
+        if (window.state) renderizarInterface();
+    }
+
+    window.onload = function() { if (sessionStorage.getItem('sinucaRole')) iniciarAppGrafica(); }
+
+    // --- ESTADO INICIAL ---
     let defaultState = {
         torneio: {
-            phase: 'cadastro',
-            players: [],
-            matches: [],
-            knockout: {
-                semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, 
-                semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, 
-                terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false },
-                final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }
-            },
+            phase: 'cadastro', players: [], matches: [],
+            knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } },
             podium: { first: null, second: null, third: null }
         },
-        globalStats: {}, // { "Nome": { matches: 0, wins: 0, losses: 0, ballsBalance: 0, img: "", achievements: [] } }
-        hallOfFame: []   // { date: "10/10/2023", podium: {...} }
+        globalStats: {}, hallOfFame: []
     };
 
-    window.state = defaultState;
-    let abaAtual = 'torneio';
+    window.state = null; let abaAtual = 'torneio';
 
-    // --- LISTENER DO FIREBASE (TEMPO REAL) ---
+    // --- FIREBASE SYNC ---
     onSnapshot(torneioDoc, (docSnap) => {
-        document.getElementById('loadingOverlay').classList.add('hidden');
-        if (docSnap.exists()) {
-            window.state = docSnap.data();
-        } else {
-            // Se não existe, cria a primeira vez
-            setDoc(torneioDoc, defaultState);
-        }
-        renderizarInterface();
+        if (docSnap.exists()) window.state = docSnap.data();
+        else { setDoc(torneioDoc, defaultState); window.state = defaultState; }
+        if (sessionStorage.getItem('sinucaRole')) renderizarInterface();
     });
 
     window.salvarDados = async function() {
-        try {
-            await setDoc(torneioDoc, window.state);
-        } catch (e) {
-            console.error("Erro ao salvar:", e);
-            alert("Erro ao sincronizar com o servidor.");
-        }
+        if (sessionStorage.getItem('sinucaRole') !== 'admin') return alert("Apenas admins podem salvar.");
+        try { await setDoc(torneioDoc, window.state); } catch (e) { alert("Erro ao sincronizar."); }
     }
 
-    // --- NAVEGAÇÃO DE ABAS ---
+    // --- NAVEGAÇÃO ---
     window.alterarAba = function(aba) {
         abaAtual = aba;
-        document.getElementById('tab-torneio').classList.remove('active');
-        document.getElementById('tab-global').classList.remove('active');
-        document.getElementById('view-torneio').classList.add('hidden');
-        document.getElementById('view-global').classList.add('hidden');
-
-        document.getElementById(`tab-${aba}`).classList.add('active');
-        document.getElementById(`view-${aba}`).classList.remove('hidden');
+        document.getElementById('tab-torneio').classList.remove('active'); document.getElementById('tab-global').classList.remove('active');
+        document.getElementById('view-torneio').classList.add('hidden'); document.getElementById('view-global').classList.add('hidden');
+        document.getElementById(`tab-${aba}`).classList.add('active'); document.getElementById(`view-${aba}`).classList.remove('hidden');
         renderizarInterface();
     }
 
-    // --- FUNÇÕES DE CADASTRO E ESTATÍSTICA GLOBAL ---
-    function registrarNoGlobal(playerData) {
-        if (!window.state.globalStats[playerData.name]) {
-            window.state.globalStats[playerData.name] = {
-                img: playerData.img,
-                matches: 0, wins: 0, losses: 0, ballsBalance: 0,
-                achievements: []
-            };
-        }
+    // --- CADASTRO ---
+    function registrarNoGlobal(p) {
+        if (!window.state.globalStats[p.name]) window.state.globalStats[p.name] = { img: p.img, matches: 0, wins: 0, losses: 0, ballsBalance: 0, achievements: [] };
     }
 
     window.adicionarJogador = function() {
         const name = document.getElementById('playerName').value.trim();
         const fileInput = document.getElementById('playerImgFile');
         const file = fileInput.files[0];
-        
         if (!name) return alert("Digite o nome!");
-        if (window.state.torneio.players.find(p => p.name === name)) return alert("Jogador já existe no torneio atual!");
+        if (window.state.torneio.players.find(p => p.name === name)) return alert("Jogador já existe!");
 
         if (file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
+            const r = new FileReader();
+            r.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 150;
-                    const scaleSize = MAX_WIDTH / img.width;
-                    canvas.width = MAX_WIDTH;
-                    canvas.height = img.height * scaleSize;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    const miniaturaBase64 = canvas.toDataURL('image/jpeg', 0.7);
-                    salvarNovoJogador(name, miniaturaBase64);
-                }
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
+                    const canvas = document.createElement('canvas'); const w = 150; canvas.width = w; canvas.height = img.height * (w / img.width);
+                    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                    salvarNovoJogador(name, canvas.toDataURL('image/jpeg', 0.7));
+                }; img.src = e.target.result;
+            }; r.readAsDataURL(file);
         } else {
-            // Busca a imagem do global se já existir, senão gera avatar
             let imgData = window.state.globalStats[name] ? window.state.globalStats[name].img : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=f39c12&color=fff';
             salvarNovoJogador(name, imgData);
         }
     }
 
     function salvarNovoJogador(name, imgData) {
-        let newPlayer = { name, img: imgData, matches: 0, wins: 0, losses: 0, points: 0, ballsBalance: 0 };
-        window.state.torneio.players.push(newPlayer);
-        registrarNoGlobal(newPlayer); // Garante que existe no global
-        document.getElementById('playerName').value = '';
-        document.getElementById('playerImgFile').value = '';
-        window.salvarDados(); 
+        let np = { name, img: imgData, matches: 0, wins: 0, losses: 0, points: 0, ballsBalance: 0 };
+        window.state.torneio.players.push(np); registrarNoGlobal(np);
+        document.getElementById('playerName').value = ''; document.getElementById('playerImgFile').value = ''; window.salvarDados(); 
     }
 
-    // --- LÓGICA DO TORNEIO (LIGA) ---
+    // --- LIGA ---
     window.iniciarCampeonato = function() {
-        if (window.state.torneio.players.length < 4) return alert("Mínimo de 4 jogadores para as semifinais!");
-        let p = [...window.state.torneio.players];
+        let p = [...window.state.torneio.players]; if (p.length < 4) return alert("Mínimo 4!");
         if (p.length % 2 !== 0) p.push({ name: 'FOLGA' }); 
-        
-        let numPlayers = p.length;
-        let matchId = 0;
-        for (let turno = 1; turno <= 3; turno++) {
-            let turnoPlayers = [...p];
-            for (let round = 0; round < numPlayers - 1; round++) {
-                for (let i = 0; i < numPlayers / 2; i++) {
-                    let p1 = turnoPlayers[i];
-                    let p2 = turnoPlayers[numPlayers - 1 - i];
-                    if (p1.name !== 'FOLGA' && p2.name !== 'FOLGA') {
-                        let home = (turno === 2) ? p2.name : p1.name;
-                        let away = (turno === 2) ? p1.name : p2.name;
-                        window.state.torneio.matches.push({ id: matchId++, pHome: home, pAway: away, turno: turno, completed: false });
-                    }
+        let n = p.length; let id = 0;
+        for (let t = 1; t <= 3; t++) {
+            let tp = [...p];
+            for (let r = 0; r < n - 1; r++) {
+                for (let i = 0; i < n / 2; i++) {
+                    let p1 = tp[i], p2 = tp[n - 1 - i];
+                    if (p1.name !== 'FOLGA' && p2.name !== 'FOLGA') window.state.torneio.matches.push({ id: id++, pHome: t===2?p2.name:p1.name, pAway: t===2?p1.name:p2.name, turno: t, completed: false });
                 }
-                turnoPlayers.splice(1, 0, turnoPlayers.pop());
+                tp.splice(1, 0, tp.pop());
             }
         }
-        window.state.torneio.phase = 'liga';
-        window.salvarDados();
+        window.state.torneio.phase = 'liga'; window.salvarDados();
     }
 
     window.registrarResultadoLiga = function(id) {
-        const match = window.state.torneio.matches.find(m => m.id === id);
-        const winnerName = document.getElementById(`winner-${id}`).value;
-        const ballsLeft = parseInt(document.getElementById(`balls-${id}`).value);
+        const m = window.state.torneio.matches.find(x => x.id === id);
+        const wName = document.getElementById(`winner-${id}`).value;
+        const b = parseInt(document.getElementById(`balls-${id}`).value);
+        if (!wName || isNaN(b) || b < 0) return alert("Erro");
 
-        if (!winnerName || isNaN(ballsLeft) || ballsLeft < 0) return alert("Preencha todos os dados corretamente.");
+        const lName = wName === m.pHome ? m.pAway : m.pHome;
+        const w = window.state.torneio.players.find(p => p.name === wName);
+        const l = window.state.torneio.players.find(p => p.name === lName);
 
-        const loserName = winnerName === match.pHome ? match.pAway : match.pHome;
-        const winner = window.state.torneio.players.find(p => p.name === winnerName);
-        const loser = window.state.torneio.players.find(p => p.name === loserName);
-
-        // --- SISTEMA DE CONQUISTA: ZEBRA 🦓 ---
-        let rank = [...window.state.torneio.players].sort((a,b) => b.points - a.points);
-        if (winner.matches > 0 && winner.name === rank[rank.length - 1].name && loser.name === rank[0].name) {
-            adicionarConquistaGlobal(winner.name, '🦓 Zebra');
+        let rank = [...window.state.torneio.players].sort((x,y) => y.points - x.points);
+        if (w.matches > 0 && w.name === rank[rank.length - 1].name && l.name === rank[0].name) {
+            if (!window.state.globalStats[w.name].achievements.includes('🦓 Zebra')) window.state.globalStats[w.name].achievements.push('🦓 Zebra');
         }
 
-        // Atualiza Torneio Atual
-        winner.matches++; winner.wins++; winner.points += (3 + ballsLeft); winner.ballsBalance += ballsLeft; 
-        loser.matches++; loser.losses++; loser.ballsBalance -= ballsLeft;
-
-        // Atualiza Global Stats
-        let gW = window.state.globalStats[winner.name];
-        let gL = window.state.globalStats[loserName];
-        gW.matches++; gW.wins++; gW.ballsBalance += ballsLeft;
-        gL.matches++; gL.losses++; gL.ballsBalance -= ballsLeft;
-
-        match.completed = true;
-        window.salvarDados();
-    }
-
-    function adicionarConquistaGlobal(playerName, badge) {
-        let stats = window.state.globalStats[playerName];
-        if (!stats.achievements.includes(badge)) {
-            stats.achievements.push(badge);
-        }
+        w.matches++; w.wins++; w.points += (3 + b); w.ballsBalance += b; 
+        l.matches++; l.losses++; l.ballsBalance -= b;
+        window.state.globalStats[w.name].matches++; window.state.globalStats[w.name].wins++; window.state.globalStats[w.name].ballsBalance += b;
+        window.state.globalStats[lName].matches++; window.state.globalStats[lName].losses++; window.state.globalStats[lName].ballsBalance -= b;
+        m.completed = true; window.salvarDados();
     }
 
     // --- MATA-MATA ---
-    function ordenarJogadores() {
-        window.state.torneio.players.sort((a, b) => {
-            if (b.points !== a.points) return b.points - a.points;
-            if (b.wins !== a.wins) return b.wins - a.wins;
-            return b.ballsBalance - a.ballsBalance;
-        });
-    }
-
     window.iniciarMataMata = function() {
-        ordenarJogadores();
-        const top4 = window.state.torneio.players.slice(0, 4);
-        window.state.torneio.knockout.semi1.p1 = top4[0]; 
-        window.state.torneio.knockout.semi1.p2 = top4[3]; 
-        window.state.torneio.knockout.semi2.p1 = top4[1]; 
-        window.state.torneio.knockout.semi2.p2 = top4[2]; 
-        window.state.torneio.phase = 'semis';
-        window.salvarDados();
+        window.state.torneio.players.sort((a, b) => b.points !== a.points ? b.points - a.points : (b.wins !== a.wins ? b.wins - a.wins : b.ballsBalance - a.ballsBalance));
+        const t4 = window.state.torneio.players.slice(0, 4); let k = window.state.torneio.knockout;
+        k.semi1.p1 = t4[0]; k.semi1.p2 = t4[3]; k.semi2.p1 = t4[1]; k.semi2.p2 = t4[2]; 
+        window.state.torneio.phase = 'semis'; window.salvarDados();
     }
 
-    window.registrarVitoriaBo3 = function(fase, jogadorNum) {
-        let match = window.state.torneio.knockout[fase];
-        if (jogadorNum === 1) match.winsP1++; else match.winsP2++;
-
-        if (match.winsP1 === 2 || match.winsP2 === 2) {
-            match.completed = true;
-            match.winner = match.winsP1 === 2 ? match.p1 : match.p2;
-            match.loser = match.winsP1 === 2 ? match.p2 : match.p1;
-            
-            // Computa Global (Mata-mata não conta saldo de bolas, só V/D)
-            window.state.globalStats[match.winner.name].matches++;
-            window.state.globalStats[match.winner.name].wins++;
-            window.state.globalStats[match.loser.name].matches++;
-            window.state.globalStats[match.loser.name].losses++;
-            
-            // Registra derrota no perfil do perdedor no torneio atual para validar o "Invicto" depois
-            let localLoser = window.state.torneio.players.find(p => p.name === match.loser.name);
-            if(localLoser) localLoser.losses++;
+    window.registrarVitoriaBo3 = function(fase, n) {
+        let m = window.state.torneio.knockout[fase]; n === 1 ? m.winsP1++ : m.winsP2++;
+        if (m.winsP1 === 2 || m.winsP2 === 2) {
+            m.completed = true; m.winner = m.winsP1 === 2 ? m.p1 : m.p2; m.loser = m.winsP1 === 2 ? m.p2 : m.p1;
+            window.state.globalStats[m.winner.name].matches++; window.state.globalStats[m.winner.name].wins++;
+            window.state.globalStats[m.loser.name].matches++; window.state.globalStats[m.loser.name].losses++;
+            let localL = window.state.torneio.players.find(p => p.name === m.loser.name); if(localL) localL.losses++;
         }
-
-        verificarAvancoFases();
-        window.salvarDados();
-    }
-
-    function verificarAvancoFases() {
         let t = window.state.torneio;
         if (t.phase === 'semis' && t.knockout.semi1.completed && t.knockout.semi2.completed) {
             t.knockout.terceiro.p1 = t.knockout.semi1.loser; t.knockout.terceiro.p2 = t.knockout.semi2.loser;
-            t.knockout.final.p1 = t.knockout.semi1.winner; t.knockout.final.p2 = t.knockout.semi2.winner;
-            t.phase = 'terceiro';
-        }
-        else if (t.phase === 'terceiro' && t.knockout.terceiro.completed) {
-            t.podium.third = t.knockout.terceiro.winner;
-            t.phase = 'final';
-        }
-        else if (t.phase === 'final' && t.knockout.final.completed) {
-            t.podium.first = t.knockout.final.winner;
-            t.podium.second = t.knockout.final.loser;
-            t.phase = 'podio';
-            dispararConfetes();
-        }
-    }
-
-    // --- NOVA EDIÇÃO E HALL DA FAMA ---
-    window.iniciarNovaEdicao = function() {
-        let t = window.state.torneio;
-        
-        // --- SISTEMA DE CONQUISTA: INVICTO 🛡️ ---
-        let campeaoProfile = t.players.find(p => p.name === t.podium.first.name);
-        if (campeaoProfile && campeaoProfile.losses === 0) {
-            adicionarConquistaGlobal(campeaoProfile.name, '🛡️ Invicto');
-        }
-
-        // Salvar no Hall da Fama
-        let dataAtual = new Date().toLocaleDateString('pt-BR');
-        window.state.hallOfFame.push({
-            date: dataAtual,
-            podium: { first: t.podium.first, second: t.podium.second, third: t.podium.third }
-        });
-
-        // Resetar Torneio Atual mantendo os jogadores cadastrados, mas zerando estatísticas locais
-        t.phase = 'cadastro';
-        t.matches = [];
-        t.knockout = defaultState.torneio.knockout;
-        t.podium = { first: null, second: null, third: null };
-        
-        t.players.forEach(p => { p.matches = 0; p.wins = 0; p.losses = 0; p.points = 0; p.ballsBalance = 0; });
-        
+            t.knockout.final.p1 = t.knockout.semi1.winner; t.knockout.final.p2 = t.knockout.semi2.winner; t.phase = 'terceiro';
+        } else if (t.phase === 'terceiro' && t.knockout.terceiro.completed) { t.podium.third = t.knockout.terceiro.winner; t.phase = 'final'; }
+        else if (t.phase === 'final' && t.knockout.final.completed) { t.podium.first = t.knockout.final.winner; t.podium.second = t.knockout.final.loser; t.phase = 'podio'; dispararConfetes(); }
         window.salvarDados();
-        alert("Torneio arquivado no Hall da Fama! Vocês já podem organizar a próxima edição.");
     }
 
-    window.resetarTudoHard = function() {
-        let code = prompt("Tem certeza? Isso apagará TUDO (Histórico Global e Torneios). Digite 'APAGAR' para confirmar:");
-        if (code === "APAGAR") {
-            window.state = defaultState;
-            window.salvarDados();
+    window.iniciarNovaEdicao = function() {
+        let t = window.state.torneio; let c = t.players.find(p => p.name === t.podium.first.name);
+        if (c && c.losses === 0 && !window.state.globalStats[c.name].achievements.includes('🛡️ Invicto')) window.state.globalStats[c.name].achievements.push('🛡️ Invicto');
+        window.state.hallOfFame.push({ date: new Date().toLocaleDateString('pt-BR'), podium: { first: t.podium.first, second: t.podium.second, third: t.podium.third } });
+        t.phase = 'cadastro'; t.matches = []; t.knockout = defaultState.torneio.knockout; t.podium = { first: null, second: null, third: null };
+        t.players.forEach(p => { p.matches = p.wins = p.losses = p.points = p.ballsBalance = 0; });
+        window.salvarDados(); alert("Salvo no Hall da Fama!");
+    }
+
+    window.resetarTudoHard = function() { if (prompt("Digite 'APAGAR' para zerar tudo:") === "APAGAR") { window.state = defaultState; window.salvarDados(); } }
+
+    // --- RENDERIZAÇÃO ---
+    function renderizarCampeaoAtual() {
+        const text = document.getElementById('championNameText');
+        const img = document.getElementById('championImg');
+        
+        if (window.state.hallOfFame && window.state.hallOfFame.length > 0) {
+            // Pega o vencedor do último torneio arquivado
+            const ultimo = window.state.hallOfFame[window.state.hallOfFame.length - 1];
+            text.textContent = ultimo.podium.first.name;
+            img.src = ultimo.podium.first.img;
+        } else {
+            // Fallback: Fernando é o campeão inicial como solicitado
+            text.textContent = "Fernando";
+            img.src = "https://ui-avatars.com/api/?name=Fernando&background=FFD700&color=000";
         }
     }
 
-    // --- RENDERIZAÇÃO VISUAL ---
     function renderizarInterface() {
+        if (!window.state) return;
+        
+        renderizarCampeaoAtual();
+
         if (abaAtual === 'global') {
-            renderizarGlobal();
+            const tbody = document.getElementById('globalStatsBody'); tbody.innerHTML = '';
+            let s = Object.entries(window.state.globalStats).map(([name, data]) => ({ name, ...data })).sort((a,b) => b.wins - a.wins);
+            s.forEach(p => tbody.innerHTML += `<tr><td class="player-cell"><img src="${p.img}" class="player-img">${p.name}</td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td><td><div class="achievements">${p.achievements.map(b=>`<span class="badge">${b}</span>`).join('')}</div></td></tr>`);
+            
+            const hof = document.getElementById('hallOfFameContainer'); hof.innerHTML = window.state.hallOfFame.length ? '' : '<p>Vazio</p>';
+            [...window.state.hallOfFame].reverse().forEach((ed, i) => {
+                hof.innerHTML += `<div style="background:#222; padding:15px; border-radius:8px; border-left:4px solid var(--gold);"><h3 style="margin-top:0; color:var(--gold);">Edição ${window.state.hallOfFame.length - i} <small style="color:#888; font-size:0.6em;">(${ed.date})</small></h3><div style="display:flex; justify-content:space-around; align-items:flex-end; gap:10px;"><div style="text-align:center;"><img src="${ed.podium.second.img}" style="width:40px; border-radius:50%; border:2px solid var(--silver);"><br><small>2º ${ed.podium.second.name}</small></div><div style="text-align:center;"><img src="${ed.podium.first.img}" style="width:60px; border-radius:50%; border:3px solid var(--gold);"><br><strong>🏆 ${ed.podium.first.name}</strong></div><div style="text-align:center;"><img src="${ed.podium.third.img}" style="width:40px; border-radius:50%; border:2px solid var(--bronze);"><br><small>3º ${ed.podium.third.name}</small></div></div></div>`;
+            });
             return;
         }
 
-        let t = window.state.torneio;
-        ordenarJogadores();
+        let t = window.state.torneio; 
+        t.players.sort((a, b) => b.points !== a.points ? b.points - a.points : (b.wins !== a.wins ? b.wins - a.wins : b.ballsBalance - a.ballsBalance));
         
-        document.getElementById('section-cadastro').classList.add('hidden');
-        document.getElementById('section-tabela').classList.add('hidden');
-        document.getElementById('section-liga').classList.add('hidden');
-        document.getElementById('section-matamata').classList.add('hidden');
-        document.getElementById('section-podio').classList.add('hidden');
+        ['cadastro', 'tabela', 'liga', 'matamata', 'podio'].forEach(id => document.getElementById('section-'+id).classList.add('hidden'));
 
-        // Render Tabela Atual
-        const tbody = document.querySelector('#standingsTable tbody');
-        tbody.innerHTML = '';
-        t.players.forEach((p, index) => {
-            let estilo = (t.phase !== 'cadastro' && index < 4) ? 'background-color: rgba(46, 204, 113, 0.1);' : '';
-            tbody.innerHTML += `<tr style="${estilo}"><td>${index + 1}º</td><td class="player-cell"><img src="${p.img}" class="player-img">${p.name}</td><td><strong>${p.points}</strong></td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td></tr>`;
-        });
+        const tbody = document.querySelector('#standingsTable tbody'); tbody.innerHTML = '';
+        t.players.forEach((p, i) => tbody.innerHTML += `<tr style="${t.phase!=='cadastro'&&i<4?'background:rgba(46,204,113,0.1)':''}"><td>${i+1}º</td><td class="player-cell"><img src="${p.img}" class="player-img">${p.name}</td><td><strong>${p.points}</strong></td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td></tr>`);
 
         if (t.phase === 'cadastro') {
-            document.getElementById('section-cadastro').classList.remove('hidden');
-            document.getElementById('section-tabela').classList.remove('hidden');
+            document.getElementById('section-cadastro').classList.remove('hidden'); document.getElementById('section-tabela').classList.remove('hidden');
             document.getElementById('listaJogadores').textContent = t.players.map(p => p.name).join(', ') || 'Nenhum';
         } else if (t.phase === 'liga') {
-            document.getElementById('section-tabela').classList.remove('hidden');
-            document.getElementById('section-liga').classList.remove('hidden');
-            renderizarJogosLiga();
+            document.getElementById('section-tabela').classList.remove('hidden'); document.getElementById('section-liga').classList.remove('hidden');
+            const c = document.getElementById('matchesContainer'); c.innerHTML = ''; let p = 0;
+            t.matches.forEach(m => {
+                if (m.completed) return; p++;
+                c.innerHTML += `<div class="match-item"><div class="match-header"><span>Turno ${m.turno}</span><span><strong style="color:var(--home-color)">${m.pHome}</strong> (Casa) vs ${m.pAway}</span></div><div class="form-group admin-only"><select id="winner-${m.id}" style="flex:1;"><option value="">Vencedor...</option><option value="${m.pHome}">${m.pHome}</option><option value="${m.pAway}">${m.pAway}</option></select><input type="number" id="balls-${m.id}" placeholder="Bolas restantes" min="1" max="7" style="flex:1;"><button onclick="registrarResultadoLiga(${m.id})">Salvar</button></div></div>`;
+            });
+            p === 0 ? (c.innerHTML = `<h3 style="text-align:center; color:#2ecc71;">Fase Finalizada!</h3>`, document.getElementById('btnIrMataMata').classList.remove('hidden')) : document.getElementById('btnIrMataMata').classList.add('hidden');
         } else if (['semis', 'terceiro', 'final'].includes(t.phase)) {
             document.getElementById('section-matamata').classList.remove('hidden');
-            renderizarMataMata();
+            const c = document.getElementById('containerConfrontos'); c.innerHTML = ''; let k = t.knockout;
+            let bo3 = (tit, id, d) => !d.p1 ? '' : `<div class="bo3-match"><h3>${tit}</h3><div class="bo3-players"><div class="bo3-player-card"><img src="${d.p1.img}"><span>${d.p1.name}</span>${d.completed?'':`<button class="admin-only" onclick="registrarVitoriaBo3('${id}', 1)">Venceu</button>`}</div><div class="bo3-score">${d.winsP1} x ${d.winsP2}</div><div class="bo3-player-card"><img src="${d.p2.img}"><span>${d.p2.name}</span>${d.completed?'':`<button class="admin-only" onclick="registrarVitoriaBo3('${id}', 2)">Venceu</button>`}</div></div>${d.completed?`<div style="color:var(--highlight); margin-top:10px;">Vencedor: ${d.winner.name}</div>`:''}</div>`;
+            if (t.phase === 'semis') { c.innerHTML += bo3('Semifinal 1', 'semi1', k.semi1) + bo3('Semifinal 2', 'semi2', k.semi2); }
+            else if (t.phase === 'terceiro') c.innerHTML += bo3('3º Lugar', 'terceiro', k.terceiro); else c.innerHTML += bo3('Final', 'final', k.final);
         } else if (t.phase === 'podio') {
-            document.getElementById('section-podio').classList.remove('hidden');
-            document.getElementById('campeaoTexto').textContent = `${t.podium.first.name} É O CAMPEÃO! 🏆`;
-            document.getElementById('podiumContainer').innerHTML = getPodiumHTML(t.podium);
+            document.getElementById('section-podio').classList.remove('hidden'); document.getElementById('campeaoTexto').textContent = `${t.podium.first.name} É O CAMPEÃO! 🏆`;
+            document.getElementById('podiumContainer').innerHTML = `<div class="podium-step step-2"><img src="${t.podium.second.img}" class="podium-player-img" style="border-color:var(--silver)">2º</div><div class="podium-step step-1"><img src="${t.podium.first.img}" class="podium-player-img" style="border-color:var(--gold); width:90px; height:90px; top:-50px;">1º</div><div class="podium-step step-3"><img src="${t.podium.third.img}" class="podium-player-img" style="border-color:var(--bronze)">3º</div>`;
         }
-    }
-
-    function renderizarJogosLiga() {
-        const container = document.getElementById('matchesContainer');
-        container.innerHTML = ''; let pendentes = 0;
-        window.state.torneio.matches.forEach(m => {
-            if (m.completed) return;
-            pendentes++;
-            container.innerHTML += `
-                <div class="match-item">
-                    <div class="match-header"><span>Turno ${m.turno}</span><span><strong style="color:var(--home-color)">${m.pHome}</strong> (Casa) vs ${m.pAway}</span></div>
-                    <div class="form-group">
-                        <select id="winner-${m.id}"><option value="">Vencedor...</option><option value="${m.pHome}">${m.pHome}</option><option value="${m.pAway}">${m.pAway}</option></select>
-                        <input type="number" id="balls-${m.id}" placeholder="Bolas do perdedor na mesa" min="1" max="7" style="flex: 1;">
-                        <button onclick="registrarResultadoLiga(${m.id})">Salvar</button>
-                    </div>
-                </div>`;
-        });
-        if (pendentes === 0) {
-            container.innerHTML = `<h3 style="text-align:center; color: #2ecc71;">Fase Finalizada!</h3>`;
-            document.getElementById('btnIrMataMata').classList.remove('hidden');
-        } else document.getElementById('btnIrMataMata').classList.add('hidden');
-    }
-
-    function renderizarMataMata() {
-        const container = document.getElementById('containerConfrontos');
-        container.innerHTML = '';
-        let phase = window.state.torneio.phase;
-        let k = window.state.torneio.knockout;
-
-        if (phase === 'semis') {
-            container.innerHTML += getBo3HTML('Semifinal 1 (1º x 4º)', 'semi1', k.semi1);
-            container.innerHTML += getBo3HTML('Semifinal 2 (2º x 3º)', 'semi2', k.semi2);
-        } else if (phase === 'terceiro') {
-            container.innerHTML += getBo3HTML('Disputa de 3º Lugar', 'terceiro', k.terceiro);
-        } else if (phase === 'final') {
-            container.innerHTML += getBo3HTML('A Grande Final', 'final', k.final);
-        }
-    }
-
-    function getBo3HTML(titulo, matchKey, data) {
-        if (!data.p1) return '';
-        let btn1 = data.completed ? '' : `<button style="width:100%; margin-top:10px" onclick="registrarVitoriaBo3('${matchKey}', 1)">Venceu</button>`;
-        let btn2 = data.completed ? '' : `<button style="width:100%; margin-top:10px" onclick="registrarVitoriaBo3('${matchKey}', 2)">Venceu</button>`;
-        let status = data.completed ? `<div style="color:var(--highlight); margin-top:10px;">Vencedor: ${data.winner.name}</div>` : '';
-        return `
-            <div class="bo3-match">
-                <h3>${titulo}</h3>
-                <div class="bo3-players">
-                    <div class="bo3-player-card"><img src="${data.p1.img}"><span>${data.p1.name}</span>${btn1}</div>
-                    <div class="bo3-score">${data.winsP1} x ${data.winsP2}</div>
-                    <div class="bo3-player-card"><img src="${data.p2.img}"><span>${data.p2.name}</span>${btn2}</div>
-                </div>${status}
-            </div>`;
-    }
-
-    // --- RENDER GLOBAL ---
-    function renderizarGlobal() {
-        const tbody = document.getElementById('globalStatsBody');
-        tbody.innerHTML = '';
-        
-        let statsArray = Object.entries(window.state.globalStats).map(([name, data]) => ({ name, ...data }));
-        statsArray.sort((a,b) => b.wins - a.wins); // Ordena por mais vitórias globais
-
-        statsArray.forEach(p => {
-            let badgesHtml = p.achievements.map(b => `<span class="badge">${b}</span>`).join('');
-            tbody.innerHTML += `
-                <tr>
-                    <td class="player-cell"><img src="${p.img}" class="player-img">${p.name}</td>
-                    <td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td>
-                    <td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td>
-                    <td><div class="achievements">${badgesHtml}</div></td>
-                </tr>`;
-        });
-
-        const hofContainer = document.getElementById('hallOfFameContainer');
-        hofContainer.innerHTML = '';
-        if (window.state.hallOfFame.length === 0) {
-            hofContainer.innerHTML = '<p style="text-align:center; color:#aaa;">Nenhuma edição finalizada ainda.</p>';
-        } else {
-            // Mostra do mais recente para o mais antigo
-            [...window.state.hallOfFame].reverse().forEach((ed, index) => {
-                let edNum = window.state.hallOfFame.length - index;
-                hofContainer.innerHTML += `
-                    <div style="background: #222; padding: 15px; border-radius: 8px; border-left: 4px solid var(--gold);">
-                        <h3 style="margin-top:0; color:var(--gold);">Edição ${edNum} <small style="color:#888; font-size:0.6em;">(${ed.date})</small></h3>
-                        <div style="display:flex; justify-content:space-around; align-items:flex-end; gap:10px;">
-                            <div style="text-align:center;"><img src="${ed.podium.second.img}" style="width:40px; border-radius:50%; border:2px solid var(--silver);"><br><small>2º ${ed.podium.second.name}</small></div>
-                            <div style="text-align:center;"><img src="${ed.podium.first.img}" style="width:60px; border-radius:50%; border:3px solid var(--gold);"><br><strong>🏆 ${ed.podium.first.name}</strong></div>
-                            <div style="text-align:center;"><img src="${ed.podium.third.img}" style="width:40px; border-radius:50%; border:2px solid var(--bronze);"><br><small>3º ${ed.podium.third.name}</small></div>
-                        </div>
-                    </div>`;
-            });
-        }
-    }
-
-    function getPodiumHTML(p) {
-        return `
-            <div class="podium-step step-2"><img src="${p.second.img}" class="podium-player-img" style="border-color: var(--silver)">2º</div>
-            <div class="podium-step step-1"><img src="${p.first.img}" class="podium-player-img" style="border-color: var(--gold); width: 90px; height: 90px; top: -50px;">1º</div>
-            <div class="podium-step step-3"><img src="${p.third.img}" class="podium-player-img" style="border-color: var(--bronze)">3º</div>
-        `;
     }
 
     function dispararConfetes() {
         var duration = 5 * 1000; var animationEnd = Date.now() + duration; var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
         function randomInRange(min, max) { return Math.random() * (max - min) + min; }
         var interval = setInterval(function() {
-            var timeLeft = animationEnd - Date.now();
-            if (timeLeft <= 0) { return clearInterval(interval); }
+            var timeLeft = animationEnd - Date.now(); if (timeLeft <= 0) return clearInterval(interval);
             var particleCount = 50 * (timeLeft / duration);
             confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
             confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
