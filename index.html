@@ -102,6 +102,12 @@
         .hidden { display: none !important; }
         .text-muted { font-size: 0.85em; color: #aaa; margin-top: 5px; display: block; }
 
+        /* Histórico Accordion */
+        details { background: #1a1a1a; padding: 10px; border-radius: 6px; margin-top: 15px; border: 1px solid #333; }
+        summary { cursor: pointer; color: var(--highlight); font-weight: bold; outline: none; list-style: none; text-align: center; padding: 5px;}
+        summary::-webkit-details-marker { display: none; }
+        details[open] summary { border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px; color: white;}
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #1a1a1a; }
         ::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
@@ -123,7 +129,8 @@
             .step-2 { height: 130px; width: 80px; font-size: 1em; }
             .step-3 { height: 90px; width: 80px; font-size: 1em; }
             .podium-player-img { width: 50px; height: 50px; top: -25px; border-width: 2px; }
-            .upcoming-players { font-size: 0.85em; }
+            .upcoming-players { font-size: 0.85em; flex-wrap: wrap; }
+            .badge-balls { font-size: 0.85em !important; }
         }
     </style>
 </head>
@@ -167,7 +174,7 @@
     <div class="nav-tabs">
         <div class="tab active" id="tab-torneio" onclick="alterarAba('torneio')">Classificação</div>
         <div class="tab" id="tab-jogos" onclick="alterarAba('jogos')">Jogos 🎱</div>
-        <div class="tab" id="tab-global" onclick="alterarAba('global')">Estatísticas & Histórico</div>
+        <div class="tab" id="tab-global" onclick="alterarAba('global')">Histórico 🏆</div>
     </div>
 
     <!-- ================= 1. CLASSIFICAÇÃO (Torneio Atual) ================= -->
@@ -190,7 +197,17 @@
                 </div>
             </div>
 
-            <button class="btn-start" onclick="iniciarCampeonato()" style="margin-top: 25px;">Iniciar Campeonato</button>
+            <!-- SELETOR DE TURNOS -->
+            <div class="form-group admin-only" style="margin-top: 25px; justify-content: center; background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444;">
+                <label for="qtdTurnos" style="color: #f4f4f4; font-weight: bold;">Formato da Liga:</label>
+                <select id="qtdTurnos" style="width: auto; flex: 1; min-width: 200px;">
+                    <option value="1">1 Turno (Todos vs Todos 1x)</option>
+                    <option value="2">2 Turnos (Ida e Volta)</option>
+                    <option value="3">3 Turnos (Longo)</option>
+                </select>
+            </div>
+
+            <button class="btn-start" onclick="iniciarCampeonato()">Iniciar Campeonato</button>
         </div>
 
         <div class="card" id="section-tabela">
@@ -207,7 +224,7 @@
             <h2>🏆 FIM DE JOGO 🏆</h2>
             <h3 id="campeaoTexto" style="text-align: center; color: var(--gold); font-size: 2em; margin-bottom: 40px;"></h3>
             <div class="podium-container" id="podiumContainer"></div>
-            <button class="btn-start admin-only" style="margin-top: 40px;" onclick="iniciarNovaEdicao()">Registrar no Hall da Fama e Iniciar Nova Edição</button>
+            <button class="btn-start admin-only" style="margin-top: 40px;" onclick="iniciarNovaEdicao()">Registrar no Histórico e Iniciar Nova Edição</button>
         </div>
 
         <div style="text-align: right; margin-top: 20px;" class="admin-only">
@@ -218,7 +235,7 @@
     <!-- ================= 2. ABA DE JOGOS ================= -->
     <div id="view-jogos" class="hidden">
         <div class="card" id="jogos-container">
-            <!-- Preenchido via JS (Destaque, Próximos e Histórico) -->
+            <!-- Preenchido via JS -->
         </div>
     </div>
 
@@ -226,7 +243,8 @@
     <div id="view-global" class="hidden">
         
         <div class="card">
-            <h2>📊 Estatísticas Globais (All-Time)</h2>
+            <h2>📊 Estatísticas Gerais (Todos os Tempos)</h2>
+            <p class="text-muted" style="text-align:center;">Soma de pontos, vitórias e derrotas de todas as edições jogadas.</p>
             <div class="table-responsive">
                 <table>
                     <thead><tr><th style="text-align: left;">Jogador</th><th>J</th><th>V</th><th>D</th><th>Saldo</th><th>Conquistas</th></tr></thead>
@@ -236,12 +254,13 @@
         </div>
 
         <div class="card" style="margin-top: 20px;">
-            <h2>🏛️ Hall da Fama</h2>
-            <div id="hallOfFameContainer" style="display: flex; flex-direction: column; gap: 15px;"></div>
+            <h2>🏛️ Histórico de Edições</h2>
+            <p class="text-muted" style="text-align:center;">A galeria eterna dos campeões do SKUNK CHAMPIONS.</p>
+            <div id="hallOfFameContainer" style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;"></div>
         </div>
 
         <div style="text-align: right; margin-top: 20px;" class="admin-only">
-            <button class="btn-danger" onclick="resetarTudoHard()">⚠️ Resetar TUDO (Torneio e Histórico)</button>
+            <button class="btn-danger" onclick="resetarTudoHard()">⚠️ Apagar TODO o Histórico e Estatísticas</button>
         </div>
     </div>
 </div>
@@ -303,8 +322,8 @@
     });
 
     window.salvarDados = async function() {
-        if (sessionStorage.getItem('sinucaRole') !== 'admin') return alert("Apenas admins.");
-        try { await setDoc(torneioDoc, window.state); } catch (e) { alert("Erro ao salvar."); }
+        if (sessionStorage.getItem('sinucaRole') !== 'admin') return alert("Apenas admins podem salvar.");
+        try { await setDoc(torneioDoc, window.state); } catch (e) { alert("Erro ao salvar no banco."); }
     }
 
     window.alterarAba = function(aba) {
@@ -317,7 +336,7 @@
     }
 
     window.cancelarTorneioAtual = function() {
-        if(confirm("Deseja cancelar a EDIÇÃO ATUAL? Tudo desse campeonato sumirá.")) {
+        if(confirm("Deseja cancelar a EDIÇÃO ATUAL? Tudo desse campeonato sumirá (os campeonatos anteriores ficam intactos).")) {
             window.state.torneio = defaultState.torneio; window.salvarDados();
         }
     }
@@ -373,15 +392,20 @@
     }
 
     window.iniciarCampeonato = function() {
-        let p = [...window.state.torneio.players]; if (p.length < 4) return alert("Mínimo 4!");
+        let p = [...window.state.torneio.players]; if (p.length < 4) return alert("Mínimo 4 jogadores!");
+        
+        let turnos = parseInt(document.getElementById('qtdTurnos').value) || 1;
+        
         if (p.length % 2 !== 0) p.push({ name: 'FOLGA', vulgo: 'FOLGA' }); 
         let n = p.length; let id = 0;
-        for (let t = 1; t <= 3; t++) {
+        for (let t = 1; t <= turnos; t++) {
             let tp = [...p];
             for (let r = 0; r < n - 1; r++) {
                 for (let i = 0; i < n / 2; i++) {
                     let p1 = tp[i], p2 = tp[n - 1 - i];
-                    if (p1.name !== 'FOLGA' && p2.name !== 'FOLGA') window.state.torneio.matches.push({ id: id++, pHome: t===2?p2.name:p1.name, pAway: t===2?p1.name:p2.name, turno: t, completed: false });
+                    if (p1.name !== 'FOLGA' && p2.name !== 'FOLGA') {
+                        window.state.torneio.matches.push({ id: id++, pHome: t%2===0?p2.name:p1.name, pAway: t%2===0?p1.name:p2.name, turno: t, completed: false });
+                    }
                 }
                 tp.splice(1, 0, tp.pop());
             }
@@ -407,7 +431,6 @@
         w.matches++; w.wins++; w.points += (3 + b); w.ballsBalance += b; 
         l.matches++; l.losses++; l.ballsBalance -= b;
         
-        // NOVIDADE: Salvando os dados na partida para o histórico
         m.completed = true; 
         m.winnerName = wName; 
         m.ballsLeft = b;
@@ -444,14 +467,21 @@
     window.iniciarNovaEdicao = function() {
         let t = window.state.torneio; let c = t.players.find(p => p.name === t.podium.first.name);
         if (c && c.losses === 0 && !window.state.globalStats[c.name].achievements.includes('🛡️ Invicto')) window.state.globalStats[c.name].achievements.push('🛡️ Invicto');
-        window.state.hallOfFame.push({ date: new Date().toLocaleDateString('pt-BR'), podium: { first: t.podium.first, second: t.podium.second, third: t.podium.third } });
+        
+        // NOVIDADE: Salvando a Tabela Completa e Hora Exata no Histórico!
+        let dataHora = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+        window.state.hallOfFame.push({ 
+            date: dataHora, 
+            podium: { first: t.podium.first, second: t.podium.second, third: t.podium.third },
+            playersFullTable: JSON.parse(JSON.stringify(t.players)) // Copia profunda para congelar a tabela daquele dia
+        });
         
         t.phase = 'cadastro'; t.matches = []; t.knockout = defaultState.torneio.knockout; t.podium = { first: null, second: null, third: null };
         t.players.forEach(p => { p.matches = p.wins = p.losses = p.points = p.ballsBalance = 0; });
-        window.salvarDados(); alert("Salvo no Hall da Fama!");
+        window.salvarDados(); alert("Campeonato registrado com sucesso no Histórico Eterno!");
     }
 
-    window.resetarTudoHard = function() { if (prompt("Digite 'APAGAR' para zerar tudo:") === "APAGAR") { window.state = defaultState; window.salvarDados(); } }
+    window.resetarTudoHard = function() { if (prompt("Isso apaga TODOS os campeonatos passados. Digite 'APAGAR' para continuar:") === "APAGAR") { window.state = defaultState; window.salvarDados(); } }
 
     function formatarNome(p) { return `<div class="player-info"><span style="font-size:1.1em; font-weight:bold;">${p.vulgo || p.name}</span><span class="realname-text">${p.name}</span></div>`; }
 
@@ -471,8 +501,43 @@
         if (abaAtual === 'global') {
             const tb = document.getElementById('globalStatsBody'); tb.innerHTML = '';
             Object.entries(window.state.globalStats).map(([name, d]) => ({ name, ...d })).sort((a,b) => b.wins - a.wins).forEach(p => tb.innerHTML += `<tr><td class="player-cell"><img src="${p.img}" class="player-img">${formatarNome(p)}</td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td><td><div class="achievements">${p.achievements.map(b=>`<span class="badge">${b}</span>`).join('')}</div></td></tr>`);
-            const hof = document.getElementById('hallOfFameContainer'); hof.innerHTML = window.state.hallOfFame.length ? '' : '<p style="text-align:center; color:#888;">Nenhum campeonato finalizado.</p>';
-            [...window.state.hallOfFame].reverse().forEach((ed, i) => { hof.innerHTML += `<div style="background:#222; padding:15px; border-radius:8px; border-left:4px solid var(--gold);"><h3 style="margin-top:0; color:var(--gold);">Edição ${window.state.hallOfFame.length - i} <small style="color:#888; font-size:0.6em;">(${ed.date})</small></h3><div style="display:flex; justify-content:space-around; align-items:flex-end; gap:10px; text-align:center;"><div style="width:30%;"><img src="${ed.podium.second.img}" style="width:40px; border-radius:50%; border:2px solid var(--silver);"><br><span style="font-size:0.9em;">2º ${ed.podium.second.vulgo || ed.podium.second.name}</span><br><span class="realname-text">${ed.podium.second.name}</span></div><div style="width:40%;"><img src="${ed.podium.first.img}" style="width:60px; border-radius:50%; border:3px solid var(--gold);"><br><strong>🏆 ${ed.podium.first.vulgo || ed.podium.first.name}</strong><br><span class="realname-text">${ed.podium.first.name}</span></div><div style="width:30%;"><img src="${ed.podium.third.img}" style="width:40px; border-radius:50%; border:2px solid var(--bronze);"><br><span style="font-size:0.9em;">3º ${ed.podium.third.vulgo || ed.podium.third.name}</span><br><span class="realname-text">${ed.podium.third.name}</span></div></div></div>`; });
+            
+            const hof = document.getElementById('hallOfFameContainer'); 
+            hof.innerHTML = window.state.hallOfFame.length ? '' : '<p style="text-align:center; color:#888;">Nenhum campeonato finalizado.</p>';
+            
+            [...window.state.hallOfFame].reverse().forEach((ed, i) => { 
+                let tHtml = '';
+                // Se tiver a tabela completa salva, monta o acordeão
+                if (ed.playersFullTable && ed.playersFullTable.length > 0) {
+                    ed.playersFullTable.sort((a, b) => b.points !== a.points ? b.points - a.points : (b.wins !== a.wins ? b.wins - a.wins : b.ballsBalance - a.ballsBalance));
+                    let trs = ed.playersFullTable.map((p, idx) => `<tr><td>${idx+1}º</td><td style="text-align:left;"><strong>${p.vulgo || p.name}</strong></td><td>${p.points}</td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td></tr>`).join('');
+                    tHtml = `<details><summary>↕️ Ver Classificação Completa da Edição</summary><div class="table-responsive"><table style="font-size: 0.85em; margin-top: 10px;"><thead><tr><th>Pos</th><th style="text-align: left;">Jogador</th><th>Pts</th><th>J</th><th>V</th><th>D</th><th>Saldo</th></tr></thead><tbody>${trs}</tbody></table></div></details>`;
+                }
+
+                hof.innerHTML += `
+                    <div style="background:#222; padding:20px; border-radius:8px; border-left:4px solid var(--gold); box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 20px;">
+                            <h3 style="margin:0; color:var(--gold);">Edição ${window.state.hallOfFame.length - i}</h3>
+                            <span style="color:#888; font-size:0.8em; text-align:right;">Finalizado em:<br><strong>${ed.date}</strong></span>
+                        </div>
+                        <div style="display:flex; justify-content:space-around; align-items:flex-end; gap:10px; text-align:center; margin-bottom: 15px;">
+                            <div style="width:30%;">
+                                <img src="${ed.podium.second.img}" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--silver); object-fit: cover;"><br>
+                                <span style="font-size:0.9em;">2º ${ed.podium.second.vulgo || ed.podium.second.name}</span>
+                            </div>
+                            <div style="width:40%;">
+                                <img src="${ed.podium.first.img}" style="width:70px; height:70px; border-radius:50%; border:3px solid var(--gold); object-fit: cover;"><br>
+                                <strong>🏆 ${ed.podium.first.vulgo || ed.podium.first.name}</strong>
+                            </div>
+                            <div style="width:30%;">
+                                <img src="${ed.podium.third.img}" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--bronze); object-fit: cover;"><br>
+                                <span style="font-size:0.9em;">3º ${ed.podium.third.vulgo || ed.podium.third.name}</span>
+                            </div>
+                        </div>
+                        ${tHtml}
+                    </div>
+                `; 
+            });
             return;
         }
 
@@ -485,7 +550,6 @@
                 let pendentes = t.matches.filter(m => !m.completed);
                 let concluidos = t.matches.filter(m => m.completed);
 
-                // --- 1. JOGO ATUAL E PRÓXIMOS ---
                 if (pendentes.length > 0) {
                     let curr = pendentes[0]; let hP = t.players.find(x => x.name === curr.pHome), aP = t.players.find(x => x.name === curr.pAway);
                     container.innerHTML += `<div class="current-match-card"><div class="match-badge">🔥 JOGO ATUAL - TURNO ${curr.turno} 🔥</div><div class="vs-container"><div class="player-side"><div class="saida-indicator">Saída</div><img src="${hP.img}"><span class="vulgo-big">${hP.vulgo || hP.name}</span><span class="realname-text">${hP.name}</span></div><div class="vs-text">VS</div><div class="player-side"><img src="${aP.img}"><span class="vulgo-big">${aP.vulgo || aP.name}</span><span class="realname-text">${aP.name}</span></div></div><div class="form-group admin-only" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;"><select id="winner-${curr.id}" style="flex:1;"><option value="">Vencedor...</option><option value="${curr.pHome}">${hP.vulgo || hP.name}</option><option value="${curr.pAway}">${aP.vulgo || aP.name}</option></select><input type="number" id="balls-${curr.id}" placeholder="Bolas restantes" min="1" max="7" style="flex:1;"><button onclick="registrarResultadoLiga(${curr.id})" style="flex:1;">Salvar</button></div></div>`;
@@ -499,33 +563,30 @@
                     container.innerHTML = `<h3 style="text-align:center; color:#2ecc71; margin:40px 0;">Todos os jogos da Liga finalizados!</h3><button class="btn-start admin-only" onclick="iniciarMataMata()">Ir para Semifinais 🏆</button>`; 
                 }
 
-                // --- 2. HISTÓRICO DE JOGOS (Jogos Anteriores) ---
                 if (concluidos.length > 0) {
                     container.innerHTML += `<h3 style="margin-top:20px; color:#aaa; border-top: 1px solid #333; padding-top: 15px;">Jogos Anteriores (${concluidos.length})</h3><div class="upcoming-list" id="completedList"></div>`;
                     const compList = document.getElementById('completedList');
                     
-                    // Coloca os mais recentes no topo
                     [...concluidos].reverse().forEach(m => {
                         let hp = t.players.find(x => x.name === m.pHome);
                         let ap = t.players.find(x => x.name === m.pAway);
                         let hVulgo = hp ? (hp.vulgo || hp.name) : m.pHome;
                         let aVulgo = ap ? (ap.vulgo || ap.name) : m.pAway;
 
-                        // Verifica quem foi o vencedor para colocar a coroa
-                        let hDisplay = m.winnerName === m.pHome ? `<span class="winner-text">👑 ${hVulgo}</span>` : hVulgo;
-                        let aDisplay = m.winnerName === m.pAway ? `<span class="winner-text">👑 ${aVulgo}</span>` : aVulgo;
+                        let badgeBalls = m.ballsLeft ? `<span class="badge-balls" style="font-size: 0.8em; color: #fff; background: var(--green-table); padding: 2px 6px; border-radius: 4px; margin: 0 5px; white-space: nowrap;">+${m.ballsLeft} 🎱</span>` : '';
+                        let hDisplay = m.winnerName === m.pHome ? `<span class="winner-text">👑 ${hVulgo}</span> ${badgeBalls}` : `<span style="color:#888;">${hVulgo}</span>`;
+                        let aDisplay = m.winnerName === m.pAway ? `${badgeBalls} <span class="winner-text">👑 ${aVulgo}</span>` : `<span style="color:#888;">${aVulgo}</span>`;
 
                         compList.innerHTML += `
                             <div class="completed-item">
                                 <div class="upcoming-players" style="justify-content: flex-start;">
                                     <span style="color:#666; font-size:0.8em; margin-right:10px; min-width: 20px;">T${m.turno}</span>
-                                    <img src="${hp ? hp.img : ''}" class="tiny-avatar" style="opacity: ${m.winnerName===m.pHome?'1':'0.5'}">
+                                    <img src="${hp ? hp.img : ''}" class="tiny-avatar" style="opacity: ${m.winnerName===m.pHome?'1':'0.4'}">
                                     <span style="flex:1; text-align:right;">${hDisplay}</span>
                                     <span class="vs-mini">X</span>
                                     <span style="flex:1; text-align:left;">${aDisplay}</span>
-                                    <img src="${ap ? ap.img : ''}" class="tiny-avatar" style="opacity: ${m.winnerName===m.pAway?'1':'0.5'}">
+                                    <img src="${ap ? ap.img : ''}" class="tiny-avatar" style="opacity: ${m.winnerName===m.pAway?'1':'0.4'}">
                                 </div>
-                                ${m.ballsLeft ? `<div style="font-size: 0.75em; color: #888; margin-left: 10px; text-align: right; min-width: 45px; background: #222; padding: 4px 6px; border-radius: 4px;">+${m.ballsLeft} 🎱</div>` : ''}
                             </div>
                         `;
                     });
