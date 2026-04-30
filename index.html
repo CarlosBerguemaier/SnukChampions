@@ -16,10 +16,8 @@
         .sub-title { display: block; font-size: 0.4em; color: #aaa; margin-top: 5px; letter-spacing: 2px; }
         .container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
         
-        /* Sistema de Permissões */
         body.viewer-mode .admin-only { display: none !important; }
 
-        /* Login Screen */
         #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); display: flex; justify-content: center; align-items: center; z-index: 10000; padding: 20px; box-sizing: border-box; }
         .login-box { background-color: var(--panel-bg); padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.8); border-top: 4px solid var(--highlight); width: 100%; max-width: 350px; display: flex; flex-direction: column; gap: 15px; text-align: center; }
         .login-box input { padding: 12px; font-size: 1.1em; text-align: center; width: 100%; box-sizing: border-box; }
@@ -28,15 +26,12 @@
         .divider { border-top: 1px solid #444; margin: 10px 0; position: relative; }
         .divider::after { content: "OU"; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--panel-bg); padding: 0 10px; color: #888; font-size: 0.8em; }
 
-        /* Header e Botão Sair */
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
         .btn-logout { background-color: transparent; color: var(--danger); border: 1px solid var(--danger); width: auto; padding: 6px 15px; font-size: 0.9em; border-radius: 4px; transition: 0.2s; }
         .btn-logout:hover { background-color: var(--danger); color: white; }
 
-        /* Campeão Atual Banner */
         .champion-banner { background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%); border: 2px solid var(--gold); border-radius: 8px; padding: 15px; text-align: center; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.15); margin-bottom: 10px; }
         
-        /* Navegação */
         .nav-tabs { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
         .tab { flex: 1; min-width: 100px; padding: 12px; text-align: center; background: #333; cursor: pointer; border-radius: 8px; font-weight: bold; transition: 0.3s; font-size: 0.9em; }
         .tab.active { background: var(--highlight); color: #1a1a1a; }
@@ -53,7 +48,6 @@
         .btn-danger { background-color: var(--danger); color: white; width: auto; padding: 10px 20px; }
         .btn-danger:hover { background-color: #a93226; }
         
-        /* Tabelas */
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 500px; }
         th, td { padding: 12px; text-align: center; border-bottom: 1px solid #444; }
@@ -63,7 +57,6 @@
         .player-info { display: flex; flex-direction: column; justify-content: center; line-height: 1.2; }
         .realname-text { font-size: 0.7em; color: #aaa; margin-top: 3px; font-weight: normal; }
         
-        /* Destaque Jogo Atual */
         .current-match-card { background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%); border: 2px solid var(--highlight); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.6); position: relative;}
         .match-badge { background: var(--highlight); color: #1a1a1a; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9em; display: inline-block; margin-bottom: 15px; letter-spacing: 1px; }
         .vs-container { display: flex; justify-content: space-around; align-items: center; margin-bottom: 20px; }
@@ -73,7 +66,6 @@
         .vs-text { font-size: 2.5em; font-weight: 900; color: #aaa; font-style: italic; }
         .vulgo-big { font-size: 1.3em; font-weight: bold; color: white; }
         
-        /* Listas de Jogos (Próximos e Anteriores) */
         .upcoming-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding-right: 5px; }
         .upcoming-item { background: #2c2c2c; padding: 10px 15px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid #555; }
         .completed-item { background: #1a1a1a; padding: 10px 15px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--green-table); opacity: 0.85; }
@@ -82,14 +74,12 @@
         .vs-mini { color: #888; font-size: 0.9em; margin: 0 10px; font-weight: bold; }
         .winner-text { color: var(--gold); font-weight: bold; }
         
-        /* Mata-mata */
         .bo3-match { background: #2c2c2c; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 15px; border: 2px solid #555; position: relative; }
         .bo3-score { font-size: 2em; font-weight: bold; margin: 15px 0; color: var(--highlight); }
         .bo3-players { display: flex; justify-content: space-around; align-items: center; font-size: 1.2em; }
         .bo3-player-card { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 35%; position: relative; }
         .bo3-player-card img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #555; }
         
-        /* Pódio */
         .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 10px; height: 300px; margin-top: 30px; }
         .podium-step { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; color: #1a1a1a; font-weight: bold; font-size: 1.5em; border-radius: 8px 8px 0 0; position: relative; text-align: center; line-height: 1.1; }
         .step-2 { height: 180px; width: 120px; background-color: var(--silver); }
@@ -102,7 +92,6 @@
         .hidden { display: none !important; }
         .text-muted { font-size: 0.85em; color: #aaa; margin-top: 5px; display: block; }
 
-        /* Histórico Accordion */
         details { background: #1a1a1a; padding: 10px; border-radius: 6px; margin-top: 15px; border: 1px solid #333; }
         summary { cursor: pointer; color: var(--highlight); font-weight: bold; outline: none; list-style: none; text-align: center; padding: 5px;}
         summary::-webkit-details-marker { display: none; }
@@ -170,7 +159,7 @@
         </div>
     </div>
 
-    <!-- Navegação (3 Abas) -->
+    <!-- Navegação -->
     <div class="nav-tabs">
         <div class="tab active" id="tab-torneio" onclick="alterarAba('torneio')">Classificação</div>
         <div class="tab" id="tab-jogos" onclick="alterarAba('jogos')">Jogos 🎱</div>
@@ -192,12 +181,9 @@
             
             <div style="margin-top: 25px;">
                 <h3 style="margin-bottom: 10px; font-size: 1.1em; color: #ccc;">Atletas Confirmados:</h3>
-                <div id="listaJogadores" style="display: flex; flex-direction: column; gap: 8px;">
-                    <!-- Preenchido via JS (Lista Editável) -->
-                </div>
+                <div id="listaJogadores" style="display: flex; flex-direction: column; gap: 8px;"></div>
             </div>
 
-            <!-- SELETOR DE TURNOS -->
             <div class="form-group admin-only" style="margin-top: 25px; justify-content: center; background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444;">
                 <label for="qtdTurnos" style="color: #f4f4f4; font-weight: bold;">Formato da Liga:</label>
                 <select id="qtdTurnos" style="width: auto; flex: 1; min-width: 200px;">
@@ -234,9 +220,7 @@
 
     <!-- ================= 2. ABA DE JOGOS ================= -->
     <div id="view-jogos" class="hidden">
-        <div class="card" id="jogos-container">
-            <!-- Preenchido via JS -->
-        </div>
+        <div class="card" id="jogos-container"></div>
     </div>
 
     <!-- ================= 3. ESTATÍSTICAS E HISTÓRICO ================= -->
@@ -309,7 +293,7 @@
     window.onload = function() { if (sessionStorage.getItem('sinucaRole')) iniciarAppGrafica(); }
 
     let defaultState = {
-        torneio: { phase: 'cadastro', players: [], matches: [], knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } }, podium: { first: null, second: null, third: null } },
+        torneio: { phase: 'cadastro', players: [], matches: [], lastPlaceName: null, seed4Name: null, knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } }, podium: { first: null, second: null, third: null } },
         globalStats: {}, hallOfFame: []
     };
 
@@ -335,64 +319,33 @@
         renderInterface();
     }
 
-    // ==========================================
-    // NOVA FUNÇÃO DE CANCELAR TORNEIO
-    // ==========================================
     window.cancelarTorneioAtual = function() {
         if(confirm("Deseja cancelar a EDIÇÃO ATUAL? \n\nTudo desse campeonato sumirá e os pontos ganhos nele serão removidos das Estatísticas Globais.")) {
-            
-            // 1. Reverter pontos do torneio atual no Global (Jogos da Liga)
             window.state.torneio.players.forEach(p => {
                 let gs = window.state.globalStats[p.name];
-                if (gs) {
-                    gs.matches -= p.matches;
-                    gs.wins -= p.wins;
-                    gs.losses -= p.losses;
-                    gs.ballsBalance -= p.ballsBalance;
-                }
+                if (gs) { gs.matches -= p.matches; gs.wins -= p.wins; gs.losses -= p.losses; gs.ballsBalance -= p.ballsBalance; }
             });
-
-            // 2. Reverter os jogos do Mata-Mata que já tenham sido concluídos
             let k = window.state.torneio.knockout;
             ['semi1', 'semi2', 'terceiro', 'final'].forEach(fase => {
                 let m = k[fase];
                 if (m && m.completed) {
-                    if (window.state.globalStats[m.winner.name]) {
-                        window.state.globalStats[m.winner.name].matches--;
-                        window.state.globalStats[m.winner.name].wins--;
-                    }
-                    if (window.state.globalStats[m.loser.name]) {
-                        // A derrota do loser já foi computada no p.losses lá na Liga, mas a partida (matches) a mais precisa ser retirada
-                        window.state.globalStats[m.loser.name].matches--;
-                    }
+                    if (window.state.globalStats[m.winner.name]) { window.state.globalStats[m.winner.name].matches--; window.state.globalStats[m.winner.name].wins--; }
+                    if (window.state.globalStats[m.loser.name]) window.state.globalStats[m.loser.name].matches--;
                 }
             });
-
-            // 3. Limpar "fantasmas" (jogadores que ficaram com 0 jogos no histórico geral)
-            Object.keys(window.state.globalStats).forEach(name => {
-                if (window.state.globalStats[name].matches <= 0) {
-                    delete window.state.globalStats[name];
-                }
-            });
-
-            // 4. Zera o torneio atual de forma segura
+            Object.keys(window.state.globalStats).forEach(name => { if (window.state.globalStats[name].matches <= 0) delete window.state.globalStats[name]; });
+            
             window.state.torneio = {
-                phase: 'cadastro', players: [], matches: [], 
-                knockout: { 
-                    semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, 
-                    semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, 
-                    terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, 
-                    final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } 
-                }, 
+                phase: 'cadastro', players: [], matches: [], lastPlaceName: null, seed4Name: null,
+                knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } }, 
                 podium: { first: null, second: null, third: null }
             };
-
             window.salvarDados();
         }
     }
 
     function registrarNoGlobal(p) {
-        if (!window.state.globalStats[p.name]) window.state.globalStats[p.name] = { vulgo: p.vulgo, img: p.img, matches: 0, wins: 0, losses: 0, ballsBalance: 0, achievements: [] };
+        if (!window.state.globalStats[p.name]) window.state.globalStats[p.name] = { vulgo: p.vulgo, img: p.img, matches: 0, wins: 0, losses: 0, ballsBalance: 0, titles: 0, finalsLost: 0, thirdPlaces: 0, achievements: [] };
         else { if(p.img) window.state.globalStats[p.name].img = p.img; if(p.vulgo) window.state.globalStats[p.name].vulgo = p.vulgo; }
     }
 
@@ -443,7 +396,6 @@
 
     window.iniciarCampeonato = function() {
         let p = [...window.state.torneio.players]; if (p.length < 4) return alert("Mínimo 4 jogadores!");
-        
         let turnos = parseInt(document.getElementById('qtdTurnos').value) || 1;
         
         if (p.length % 2 !== 0) p.push({ name: 'FOLGA', vulgo: 'FOLGA' }); 
@@ -473,17 +425,21 @@
         const w = window.state.torneio.players.find(p => p.name === wName);
         const l = window.state.torneio.players.find(p => p.name === lName);
 
+        // BADGE: Zebra
         let rank = [...window.state.torneio.players].sort((x,y) => y.points - x.points);
         if (w.matches > 0 && w.name === rank[rank.length - 1].name && l.name === rank[0].name) {
             if (!window.state.globalStats[w.name].achievements.includes('🦓 Zebra')) window.state.globalStats[w.name].achievements.push('🦓 Zebra');
         }
 
+        // BADGE: Rei da Mesa
+        if (b === 7) {
+            if (!window.state.globalStats[w.name].achievements.includes('🎱 Rei da Mesa')) window.state.globalStats[w.name].achievements.push('🎱 Rei da Mesa');
+        }
+
         w.matches++; w.wins++; w.points += (3 + b); w.ballsBalance += b; 
         l.matches++; l.losses++; l.ballsBalance -= b;
         
-        m.completed = true; 
-        m.winnerName = wName; 
-        m.ballsLeft = b;
+        m.completed = true; m.winnerName = wName; m.ballsLeft = b;
 
         window.state.globalStats[w.name].matches++; window.state.globalStats[w.name].wins++; window.state.globalStats[w.name].ballsBalance += b;
         window.state.globalStats[lName].matches++; window.state.globalStats[lName].losses++; window.state.globalStats[lName].ballsBalance -= b;
@@ -492,7 +448,13 @@
 
     window.iniciarMataMata = function() {
         window.state.torneio.players.sort((a, b) => b.points !== a.points ? b.points - a.points : (b.wins !== a.wins ? b.wins - a.wins : b.ballsBalance - a.ballsBalance));
-        const t4 = window.state.torneio.players.slice(0, 4); let k = window.state.torneio.knockout;
+        const t4 = window.state.torneio.players.slice(0, 4); 
+        
+        // Guardar o último e o 4º colocado para conquistas
+        window.state.torneio.seed4Name = t4[3].name;
+        window.state.torneio.lastPlaceName = window.state.torneio.players[window.state.torneio.players.length - 1].name;
+
+        let k = window.state.torneio.knockout;
         k.semi1.p1 = t4[0]; k.semi1.p2 = t4[3]; k.semi2.p1 = t4[1]; k.semi2.p2 = t4[2]; 
         window.state.torneio.phase = 'semis'; window.salvarDados();
     }
@@ -501,6 +463,12 @@
         let m = window.state.torneio.knockout[fase]; n === 1 ? m.winsP1++ : m.winsP2++;
         if (m.winsP1 === 2 || m.winsP2 === 2) {
             m.completed = true; m.winner = m.winsP1 === 2 ? m.p1 : m.p2; m.loser = m.winsP1 === 2 ? m.p2 : m.p1;
+            
+            // BADGE: Varredura (Ganhar de 2x0 no Mata-Mata)
+            if ((m.winsP1 === 2 && m.winsP2 === 0) || (m.winsP2 === 2 && m.winsP1 === 0)) {
+                if (!window.state.globalStats[m.winner.name].achievements.includes('🧹 Varredura')) window.state.globalStats[m.winner.name].achievements.push('🧹 Varredura');
+            }
+
             window.state.globalStats[m.winner.name].matches++; window.state.globalStats[m.winner.name].wins++;
             window.state.globalStats[m.loser.name].matches++; window.state.globalStats[m.loser.name].losses++;
             let localL = window.state.torneio.players.find(p => p.name === m.loser.name); if(localL) localL.losses++;
@@ -515,8 +483,47 @@
     }
 
     window.iniciarNovaEdicao = function() {
-        let t = window.state.torneio; let c = t.players.find(p => p.name === t.podium.first.name);
-        if (c && c.losses === 0 && !window.state.globalStats[c.name].achievements.includes('🛡️ Invicto')) window.state.globalStats[c.name].achievements.push('🛡️ Invicto');
+        let t = window.state.torneio; 
+        
+        // --- PROCESSAMENTO DE CONQUISTAS (FIM DE CAMPEONATO) ---
+        let p1Name = t.podium.first.name, p2Name = t.podium.second.name, p3Name = t.podium.third.name;
+        
+        // BADGE: Invicto
+        let cLocal = t.players.find(p => p.name === p1Name);
+        if (cLocal && cLocal.losses === 0 && !window.state.globalStats[p1Name].achievements.includes('🛡️ Invicto')) {
+            window.state.globalStats[p1Name].achievements.push('🛡️ Invicto');
+        }
+
+        // BADGE: Global Elite (5 Títulos)
+        window.state.globalStats[p1Name].titles = (window.state.globalStats[p1Name].titles || 0) + 1;
+        if (window.state.globalStats[p1Name].titles >= 5 && !window.state.globalStats[p1Name].achievements.includes('🎯 Global Elite')) {
+            window.state.globalStats[p1Name].achievements.push('🎯 Global Elite');
+        }
+
+        // BADGE: Sobrevivente (Foi 4º e virou campeão)
+        if (p1Name === t.seed4Name && !window.state.globalStats[p1Name].achievements.includes('💀 Sobrevivente')) {
+            window.state.globalStats[p1Name].achievements.push('💀 Sobrevivente');
+        }
+
+        // BADGE: Pipoqueiro (Vice 3 Vezes)
+        window.state.globalStats[p2Name].finalsLost = (window.state.globalStats[p2Name].finalsLost || 0) + 1;
+        if (window.state.globalStats[p2Name].finalsLost >= 3 && !window.state.globalStats[p2Name].achievements.includes('🥵 Pipoqueiro')) {
+            window.state.globalStats[p2Name].achievements.push('🥵 Pipoqueiro');
+        }
+
+        // BADGE: O Eterno Terceiro (Terceiro 2 vezes)
+        window.state.globalStats[p3Name].thirdPlaces = (window.state.globalStats[p3Name].thirdPlaces || 0) + 1;
+        if (window.state.globalStats[p3Name].thirdPlaces >= 2 && !window.state.globalStats[p3Name].achievements.includes('🥉 O Eterno Terceiro')) {
+            window.state.globalStats[p3Name].achievements.push('🥉 O Eterno Terceiro');
+        }
+
+        // BADGE: Lanterneiro
+        if (t.lastPlaceName) {
+            if (!window.state.globalStats[t.lastPlaceName].achievements.includes('🔧 Lanterneiro')) {
+                window.state.globalStats[t.lastPlaceName].achievements.push('🔧 Lanterneiro');
+            }
+        }
+        // -------------------------------------------------------
         
         let dataHora = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
         window.state.hallOfFame.push({ 
@@ -526,13 +533,8 @@
         });
         
         window.state.torneio = {
-            phase: 'cadastro', players: [], matches: [], 
-            knockout: { 
-                semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, 
-                semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, 
-                terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, 
-                final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } 
-            }, 
+            phase: 'cadastro', players: [], matches: [], lastPlaceName: null, seed4Name: null,
+            knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } }, 
             podium: { first: null, second: null, third: null }
         };
         window.salvarDados(); alert("Campeonato registrado com sucesso no Histórico Eterno!");
