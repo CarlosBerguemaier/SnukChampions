@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKUNK CHAMPIONS</title>
+    <title>SNUK CHAMPIONS</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
@@ -127,7 +127,7 @@
 
 <div id="loginOverlay">
     <div class="login-box">
-        <h2 style="margin-bottom: 0;">🎱 SKUNK CHAMPIONS</h2>
+        <h2 style="margin-bottom: 0;">🎱 SNUK CHAMPIONS</h2>
         <p class="text-muted" style="margin-top: 5px; letter-spacing: 1px; font-size: 0.8em;">M. CORTELINI AZZOLIN</p>
         <button class="btn-viewer" onclick="entrarComoViewer()">👁️ Apenas Acompanhar</button>
         <div class="divider"></div>
@@ -141,7 +141,7 @@
     
     <div class="header-top">
         <h1 style="margin: 0;">
-            🎱 SKUNK CHAMPIONS
+            🎱 SNUK CHAMPIONS
             <span class="sub-title">M. CORTELINI AZZOLIN</span>
             <span id="userBadge" style="font-size: 0.4em; vertical-align: middle; display: inline-block; margin-top: 5px;" class="badge"></span>
         </h1>
@@ -171,12 +171,25 @@
         
         <div class="card admin-only" id="section-cadastro">
             <h2>Cadastrar Jogadores</h2>
-            <p class="text-muted" style="text-align: center; margin-top: 0;">Use o <strong>Nome e Sobrenome</strong> para manter o histórico unificado nas próximas edições.</p>
-            <div class="form-group">
-                <input type="text" id="playerName" placeholder="Nome Completo (Chave)" required style="flex: 1.5;">
-                <input type="text" id="playerVulgo" placeholder="Vulgo" style="flex: 1;">
-                <input type="file" id="playerImgFile" accept="image/*" title="Foto (Opcional)">
-                <button onclick="adicionarJogador()" style="width: auto;">Add</button>
+            
+            <div style="background: #222; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid var(--highlight);">
+                <h3 style="margin-top: 0; font-size: 1.1em; color: var(--highlight);">📥 Adicionar do Banco de Dados</h3>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <select id="existingPlayerSelect" style="flex: 2; padding: 12px; font-size: 1.05em;">
+                        <option value="">Selecione um jogador salvo...</option>
+                    </select>
+                    <button onclick="adicionarJogadorExistente()" style="flex: 1; background: var(--highlight); color: #1a1a1a;">Adicionar</button>
+                </div>
+            </div>
+
+            <div style="background: #222; padding: 15px; border-radius: 8px; border-left: 4px solid var(--green-table);">
+                <h3 style="margin-top: 0; font-size: 1.1em; color: #2ecc71;">✨ Criar Novo Atleta (ou Editar Foto)</h3>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <input type="text" id="playerName" placeholder="Nome Completo (Chave)" required style="flex: 1.5;">
+                    <input type="text" id="playerVulgo" placeholder="Vulgo" style="flex: 1;">
+                    <input type="file" id="playerImgFile" accept="image/*" title="Foto (Opcional)">
+                    <button onclick="adicionarNovoJogador()" style="width: auto;">Salvar</button>
+                </div>
             </div>
             
             <div style="margin-top: 25px;">
@@ -231,7 +244,7 @@
             <p class="text-muted" style="text-align:center;">Soma de pontos, vitórias e derrotas de todas as edições jogadas.</p>
             <div class="table-responsive">
                 <table>
-                    <thead><tr><th style="text-align: left;">Jogador</th><th>J</th><th>V</th><th>D</th><th>Saldo</th><th>Conquistas</th></tr></thead>
+                    <thead><tr><th style="text-align: left;">Jogador</th><th>Tít</th><th>J</th><th>V</th><th>D</th><th>Saldo</th><th>Conquistas</th></tr></thead>
                     <tbody id="globalStatsBody"></tbody>
                 </table>
             </div>
@@ -239,7 +252,7 @@
 
         <div class="card" style="margin-top: 20px;">
             <h2>🏛️ Histórico de Edições</h2>
-            <p class="text-muted" style="text-align:center;">A galeria eterna dos campeões do SKUNK CHAMPIONS.</p>
+            <p class="text-muted" style="text-align:center;">A galeria eterna dos campeões do SNUK CHAMPIONS.</p>
             <div id="hallOfFameContainer" style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;"></div>
         </div>
 
@@ -349,13 +362,24 @@
         else { if(p.img) window.state.globalStats[p.name].img = p.img; if(p.vulgo) window.state.globalStats[p.name].vulgo = p.vulgo; }
     }
 
-    window.adicionarJogador = function() {
+    window.adicionarJogadorExistente = function() {
+        const name = document.getElementById('existingPlayerSelect').value;
+        if (!name) return alert("Selecione um jogador na lista!");
+        
+        let dbData = window.state.globalStats[name];
+        let np = { name: name, vulgo: dbData.vulgo, img: dbData.img, matches: 0, wins: 0, losses: 0, points: 0, ballsBalance: 0 };
+        window.state.torneio.players.push(np);
+        window.salvarDados();
+    }
+
+    window.adicionarNovoJogador = function() {
         const name = document.getElementById('playerName').value.trim();
         let vulgo = document.getElementById('playerVulgo').value.trim();
         const fileInput = document.getElementById('playerImgFile'); const file = fileInput.files[0];
+        
         if (!name) return alert("O Nome Completo é obrigatório!");
         if (window.state.torneio.players.find(p => p.name === name)) return alert("Jogador já está na edição atual!");
-        if (!vulgo && window.state.globalStats[name] && window.state.globalStats[name].vulgo) vulgo = window.state.globalStats[name].vulgo;
+        
         if (!vulgo) vulgo = name.split(' ')[0];
 
         if (file) {
@@ -425,13 +449,11 @@
         const w = window.state.torneio.players.find(p => p.name === wName);
         const l = window.state.torneio.players.find(p => p.name === lName);
 
-        // BADGE: Zebra
         let rank = [...window.state.torneio.players].sort((x,y) => y.points - x.points);
         if (w.matches > 0 && w.name === rank[rank.length - 1].name && l.name === rank[0].name) {
             if (!window.state.globalStats[w.name].achievements.includes('🦓 Zebra')) window.state.globalStats[w.name].achievements.push('🦓 Zebra');
         }
 
-        // BADGE: Rei da Mesa
         if (b === 7) {
             if (!window.state.globalStats[w.name].achievements.includes('🎱 Rei da Mesa')) window.state.globalStats[w.name].achievements.push('🎱 Rei da Mesa');
         }
@@ -450,7 +472,6 @@
         window.state.torneio.players.sort((a, b) => b.points !== a.points ? b.points - a.points : (b.wins !== a.wins ? b.wins - a.wins : b.ballsBalance - a.ballsBalance));
         const t4 = window.state.torneio.players.slice(0, 4); 
         
-        // Guardar o último e o 4º colocado para conquistas
         window.state.torneio.seed4Name = t4[3].name;
         window.state.torneio.lastPlaceName = window.state.torneio.players[window.state.torneio.players.length - 1].name;
 
@@ -464,7 +485,6 @@
         if (m.winsP1 === 2 || m.winsP2 === 2) {
             m.completed = true; m.winner = m.winsP1 === 2 ? m.p1 : m.p2; m.loser = m.winsP1 === 2 ? m.p2 : m.p1;
             
-            // BADGE: Varredura (Ganhar de 2x0 no Mata-Mata)
             if ((m.winsP1 === 2 && m.winsP2 === 0) || (m.winsP2 === 2 && m.winsP1 === 0)) {
                 if (!window.state.globalStats[m.winner.name].achievements.includes('🧹 Varredura')) window.state.globalStats[m.winner.name].achievements.push('🧹 Varredura');
             }
@@ -485,45 +505,37 @@
     window.iniciarNovaEdicao = function() {
         let t = window.state.torneio; 
         
-        // --- PROCESSAMENTO DE CONQUISTAS (FIM DE CAMPEONATO) ---
         let p1Name = t.podium.first.name, p2Name = t.podium.second.name, p3Name = t.podium.third.name;
         
-        // BADGE: Invicto
         let cLocal = t.players.find(p => p.name === p1Name);
         if (cLocal && cLocal.losses === 0 && !window.state.globalStats[p1Name].achievements.includes('🛡️ Invicto')) {
             window.state.globalStats[p1Name].achievements.push('🛡️ Invicto');
         }
 
-        // BADGE: Global Elite (5 Títulos)
         window.state.globalStats[p1Name].titles = (window.state.globalStats[p1Name].titles || 0) + 1;
         if (window.state.globalStats[p1Name].titles >= 5 && !window.state.globalStats[p1Name].achievements.includes('🎯 Global Elite')) {
             window.state.globalStats[p1Name].achievements.push('🎯 Global Elite');
         }
 
-        // BADGE: Sobrevivente (Foi 4º e virou campeão)
         if (p1Name === t.seed4Name && !window.state.globalStats[p1Name].achievements.includes('💀 Sobrevivente')) {
             window.state.globalStats[p1Name].achievements.push('💀 Sobrevivente');
         }
 
-        // BADGE: Pipoqueiro (Vice 3 Vezes)
         window.state.globalStats[p2Name].finalsLost = (window.state.globalStats[p2Name].finalsLost || 0) + 1;
         if (window.state.globalStats[p2Name].finalsLost >= 3 && !window.state.globalStats[p2Name].achievements.includes('🥵 Pipoqueiro')) {
             window.state.globalStats[p2Name].achievements.push('🥵 Pipoqueiro');
         }
 
-        // BADGE: O Eterno Terceiro (Terceiro 2 vezes)
         window.state.globalStats[p3Name].thirdPlaces = (window.state.globalStats[p3Name].thirdPlaces || 0) + 1;
         if (window.state.globalStats[p3Name].thirdPlaces >= 2 && !window.state.globalStats[p3Name].achievements.includes('🥉 O Eterno Terceiro')) {
             window.state.globalStats[p3Name].achievements.push('🥉 O Eterno Terceiro');
         }
 
-        // BADGE: Lanterneiro
         if (t.lastPlaceName) {
             if (!window.state.globalStats[t.lastPlaceName].achievements.includes('🔧 Lanterneiro')) {
                 window.state.globalStats[t.lastPlaceName].achievements.push('🔧 Lanterneiro');
             }
         }
-        // -------------------------------------------------------
         
         let dataHora = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
         window.state.hallOfFame.push({ 
@@ -557,9 +569,28 @@
 
         let t = window.state.torneio;
 
+        if (t.phase === 'cadastro') {
+            const selectDB = document.getElementById('existingPlayerSelect');
+            if (selectDB) {
+                selectDB.innerHTML = '<option value="">Selecione um jogador salvo...</option>';
+                let cadastrados = t.players.map(p => p.name);
+                let dbPlayers = Object.keys(window.state.globalStats).filter(name => !cadastrados.includes(name));
+                dbPlayers.sort().forEach(name => {
+                    let p = window.state.globalStats[name];
+                    selectDB.innerHTML += `<option value="${name}">${p.vulgo || name} (${name})</option>`;
+                });
+            }
+        }
+
         if (abaAtual === 'global') {
             const tb = document.getElementById('globalStatsBody'); tb.innerHTML = '';
-            Object.entries(window.state.globalStats).map(([name, d]) => ({ name, ...d })).sort((a,b) => b.wins - a.wins).forEach(p => tb.innerHTML += `<tr><td class="player-cell"><img src="${p.img}" class="player-img">${formatarNome(p)}</td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td><td><div class="achievements">${p.achievements.map(b=>`<span class="badge">${b}</span>`).join('')}</div></td></tr>`);
+            // Agora ordena por Títulos primeiro, depois por Vitórias
+            Object.entries(window.state.globalStats).map(([name, d]) => ({ name, ...d }))
+                .sort((a,b) => (b.titles || 0) !== (a.titles || 0) ? (b.titles || 0) - (a.titles || 0) : b.wins - a.wins)
+                .forEach(p => {
+                    let tdTitles = `<td><strong>${p.titles || 0}</strong> 🏆</td>`;
+                    tb.innerHTML += `<tr><td class="player-cell"><img src="${p.img}" class="player-img">${formatarNome(p)}</td>${tdTitles}<td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td><td><div class="achievements">${p.achievements.map(b=>`<span class="badge">${b}</span>`).join('')}</div></td></tr>`;
+                });
             
             const hof = document.getElementById('hallOfFameContainer'); 
             hof.innerHTML = window.state.hallOfFame.length ? '' : '<p style="text-align:center; color:#888;">Nenhum campeonato finalizado.</p>';
