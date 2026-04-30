@@ -27,6 +27,11 @@
         .divider { border-top: 1px solid #444; margin: 10px 0; position: relative; }
         .divider::after { content: "OU"; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--panel-bg); padding: 0 10px; color: #888; font-size: 0.8em; }
 
+        /* Header e Botão Sair */
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
+        .btn-logout { background-color: transparent; color: var(--danger); border: 1px solid var(--danger); width: auto; padding: 6px 15px; font-size: 0.9em; border-radius: 4px; transition: 0.2s; }
+        .btn-logout:hover { background-color: var(--danger); color: white; }
+
         /* Campeão Atual Banner */
         .champion-banner { background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%); border: 2px solid var(--gold); border-radius: 8px; padding: 15px; text-align: center; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.15); margin-bottom: 10px; }
         
@@ -85,7 +90,8 @@
 
         /* Ajustes específicos para Celular */
         @media (max-width: 600px) {
-            h1 { font-size: 1.5em; }
+            .header-top { justify-content: center; text-align: center; }
+            h1 { font-size: 1.5em; width: 100%; margin-bottom: 5px; }
             .card { padding: 15px; }
             th, td { padding: 8px 5px; font-size: 0.9em; }
             .player-img { width: 30px; height: 30px; }
@@ -121,7 +127,11 @@
 
 <!-- APLICATIVO PRINCIPAL -->
 <div class="container hidden" id="mainApp">
-    <h1>🎱 Copa Sinuca Pro <span id="userBadge" style="font-size: 0.5em; vertical-align: middle;" class="badge"></span></h1>
+    
+    <div class="header-top">
+        <h1 style="margin: 0;">🎱 Copa Sinuca Pro <span id="userBadge" style="font-size: 0.5em; vertical-align: middle;" class="badge"></span></h1>
+        <button class="btn-logout" onclick="sairDoSistema()">🚪 Sair</button>
+    </div>
 
     <!-- CAMPEÃO ATUAL -->
     <div class="champion-banner">
@@ -239,6 +249,14 @@
 
     window.entrarComoViewer = function() {
         sessionStorage.setItem('sinucaRole', 'viewer'); iniciarAppGrafica();
+    }
+
+    window.sairDoSistema = function() {
+        sessionStorage.removeItem('sinucaRole');
+        document.getElementById('adminUser').value = '';
+        document.getElementById('adminPass').value = '';
+        document.getElementById('mainApp').classList.add('hidden');
+        document.getElementById('loginOverlay').classList.remove('hidden');
     }
 
     function iniciarAppGrafica() {
@@ -407,12 +425,10 @@
         const img = document.getElementById('championImg');
         
         if (window.state.hallOfFame && window.state.hallOfFame.length > 0) {
-            // Pega o vencedor do último torneio arquivado
             const ultimo = window.state.hallOfFame[window.state.hallOfFame.length - 1];
             text.textContent = ultimo.podium.first.name;
             img.src = ultimo.podium.first.img;
         } else {
-            // Fallback: Fernando é o campeão inicial como solicitado
             text.textContent = "Fernando";
             img.src = "https://ui-avatars.com/api/?name=Fernando&background=FFD700&color=000";
         }
