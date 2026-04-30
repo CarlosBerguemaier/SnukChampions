@@ -36,7 +36,7 @@
         /* Campeão Atual Banner */
         .champion-banner { background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%); border: 2px solid var(--gold); border-radius: 8px; padding: 15px; text-align: center; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.15); margin-bottom: 10px; }
         
-        /* Navegação (3 Abas agora) */
+        /* Navegação */
         .nav-tabs { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
         .tab { flex: 1; min-width: 100px; padding: 12px; text-align: center; background: #333; cursor: pointer; border-radius: 8px; font-weight: bold; transition: 0.3s; font-size: 0.9em; }
         .tab.active { background: var(--highlight); color: #1a1a1a; }
@@ -63,7 +63,7 @@
         .player-info { display: flex; flex-direction: column; justify-content: center; line-height: 1.2; }
         .realname-text { font-size: 0.7em; color: #aaa; margin-top: 3px; font-weight: normal; }
         
-        /* 🔥 DESTAQUE JOGO ATUAL 🔥 */
+        /* Destaque Jogo Atual */
         .current-match-card { background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%); border: 2px solid var(--highlight); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.6); position: relative;}
         .match-badge { background: var(--highlight); color: #1a1a1a; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9em; display: inline-block; margin-bottom: 15px; letter-spacing: 1px; }
         .vs-container { display: flex; justify-content: space-around; align-items: center; margin-bottom: 20px; }
@@ -73,12 +73,14 @@
         .vs-text { font-size: 2.5em; font-weight: 900; color: #aaa; font-style: italic; }
         .vulgo-big { font-size: 1.3em; font-weight: bold; color: white; }
         
-        /* Lista de Próximos Jogos */
+        /* Listas de Jogos (Próximos e Anteriores) */
         .upcoming-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding-right: 5px; }
         .upcoming-item { background: #2c2c2c; padding: 10px 15px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid #555; }
+        .completed-item { background: #1a1a1a; padding: 10px 15px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--green-table); opacity: 0.85; }
         .upcoming-players { display: flex; align-items: center; gap: 10px; flex: 1; justify-content: center;}
         .tiny-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #888; }
         .vs-mini { color: #888; font-size: 0.9em; margin: 0 10px; font-weight: bold; }
+        .winner-text { color: var(--gold); font-weight: bold; }
         
         /* Mata-mata */
         .bo3-match { background: #2c2c2c; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 15px; border: 2px solid #555; position: relative; }
@@ -173,14 +175,22 @@
         
         <div class="card admin-only" id="section-cadastro">
             <h2>Cadastrar Jogadores</h2>
+            <p class="text-muted" style="text-align: center; margin-top: 0;">Use o <strong>Nome e Sobrenome</strong> para manter o histórico unificado nas próximas edições.</p>
             <div class="form-group">
                 <input type="text" id="playerName" placeholder="Nome Completo (Chave)" required style="flex: 1.5;">
                 <input type="text" id="playerVulgo" placeholder="Vulgo" style="flex: 1;">
                 <input type="file" id="playerImgFile" accept="image/*" title="Foto (Opcional)">
                 <button onclick="adicionarJogador()" style="width: auto;">Add</button>
             </div>
-            <p style="margin-top: 10px;"><strong>Confirmados:</strong> <span id="listaJogadores">Nenhum</span></p>
-            <button class="btn-start" onclick="iniciarCampeonato()">Iniciar Campeonato</button>
+            
+            <div style="margin-top: 25px;">
+                <h3 style="margin-bottom: 10px; font-size: 1.1em; color: #ccc;">Atletas Confirmados:</h3>
+                <div id="listaJogadores" style="display: flex; flex-direction: column; gap: 8px;">
+                    <!-- Preenchido via JS (Lista Editável) -->
+                </div>
+            </div>
+
+            <button class="btn-start" onclick="iniciarCampeonato()" style="margin-top: 25px;">Iniciar Campeonato</button>
         </div>
 
         <div class="card" id="section-tabela">
@@ -208,7 +218,7 @@
     <!-- ================= 2. ABA DE JOGOS ================= -->
     <div id="view-jogos" class="hidden">
         <div class="card" id="jogos-container">
-            <!-- Preenchido via JS (Destaque do Jogo Atual + Lista de Próximos) -->
+            <!-- Preenchido via JS (Destaque, Próximos e Histórico) -->
         </div>
     </div>
 
@@ -347,6 +357,21 @@
         window.salvarDados(); 
     }
 
+    window.removerJogador = function(nome) {
+        if (!confirm(`Remover ${nome} desta edição?`)) return;
+        window.state.torneio.players = window.state.torneio.players.filter(p => p.name !== nome);
+        window.salvarDados();
+    }
+
+    window.editarJogador = function(nome) {
+        let p = window.state.torneio.players.find(x => x.name === nome);
+        if (!p) return;
+        document.getElementById('playerName').value = p.name;
+        document.getElementById('playerVulgo').value = p.vulgo;
+        window.state.torneio.players = window.state.torneio.players.filter(x => x.name !== nome);
+        window.salvarDados();
+    }
+
     window.iniciarCampeonato = function() {
         let p = [...window.state.torneio.players]; if (p.length < 4) return alert("Mínimo 4!");
         if (p.length % 2 !== 0) p.push({ name: 'FOLGA', vulgo: 'FOLGA' }); 
@@ -381,9 +406,15 @@
 
         w.matches++; w.wins++; w.points += (3 + b); w.ballsBalance += b; 
         l.matches++; l.losses++; l.ballsBalance -= b;
+        
+        // NOVIDADE: Salvando os dados na partida para o histórico
+        m.completed = true; 
+        m.winnerName = wName; 
+        m.ballsLeft = b;
+
         window.state.globalStats[w.name].matches++; window.state.globalStats[w.name].wins++; window.state.globalStats[w.name].ballsBalance += b;
         window.state.globalStats[lName].matches++; window.state.globalStats[lName].losses++; window.state.globalStats[lName].ballsBalance -= b;
-        m.completed = true; window.salvarDados();
+        window.salvarDados();
     }
 
     window.iniciarMataMata = function() {
@@ -427,7 +458,6 @@
     function renderInterface() {
         if (!window.state) return;
         
-        // 1. Campeão Atual
         const vTxt = document.getElementById('championVulgoText'), nTxt = document.getElementById('championNameText'), img = document.getElementById('championImg');
         if (window.state.hallOfFame && window.state.hallOfFame.length > 0) {
             const u = window.state.hallOfFame[window.state.hallOfFame.length - 1];
@@ -438,7 +468,6 @@
 
         let t = window.state.torneio;
 
-        // 2. Renderizar Global (Histórico)
         if (abaAtual === 'global') {
             const tb = document.getElementById('globalStatsBody'); tb.innerHTML = '';
             Object.entries(window.state.globalStats).map(([name, d]) => ({ name, ...d })).sort((a,b) => b.wins - a.wins).forEach(p => tb.innerHTML += `<tr><td class="player-cell"><img src="${p.img}" class="player-img">${formatarNome(p)}</td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td><td><div class="achievements">${p.achievements.map(b=>`<span class="badge">${b}</span>`).join('')}</div></td></tr>`);
@@ -447,64 +476,69 @@
             return;
         }
 
-        // 3. Renderizar ABA JOGOS 🎱
         if (abaAtual === 'jogos') {
-            const container = document.getElementById('jogos-container');
-            container.innerHTML = '';
-
-            if (t.phase === 'cadastro') {
-                container.innerHTML = `<h3 style="text-align:center; color:#aaa; margin:40px 0;">O campeonato ainda não começou!</h3>`;
+            const container = document.getElementById('jogos-container'); container.innerHTML = '';
+            
+            if (t.phase === 'cadastro') { 
+                container.innerHTML = `<h3 style="text-align:center; color:#aaa; margin:40px 0;">O campeonato ainda não começou!</h3>`; 
             } else if (t.phase === 'liga') {
                 let pendentes = t.matches.filter(m => !m.completed);
+                let concluidos = t.matches.filter(m => m.completed);
+
+                // --- 1. JOGO ATUAL E PRÓXIMOS ---
                 if (pendentes.length > 0) {
-                    // Destaque do Jogo Atual
-                    let curr = pendentes[0];
-                    let hP = t.players.find(x => x.name === curr.pHome), aP = t.players.find(x => x.name === curr.pAway);
-                    container.innerHTML += `
-                        <div class="current-match-card">
-                            <div class="match-badge">🔥 JOGO ATUAL - TURNO ${curr.turno} 🔥</div>
-                            <div class="vs-container">
-                                <div class="player-side">
-                                    <div class="saida-indicator">Saída</div>
-                                    <img src="${hP.img}"><span class="vulgo-big">${hP.vulgo || hP.name}</span><span class="realname-text">${hP.name}</span>
-                                </div>
-                                <div class="vs-text">VS</div>
-                                <div class="player-side">
-                                    <img src="${aP.img}"><span class="vulgo-big">${aP.vulgo || aP.name}</span><span class="realname-text">${aP.name}</span>
-                                </div>
-                            </div>
-                            <div class="form-group admin-only" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;">
-                                <select id="winner-${curr.id}" style="flex:1;"><option value="">Vencedor...</option><option value="${curr.pHome}">${hP.vulgo || hP.name}</option><option value="${curr.pAway}">${aP.vulgo || aP.name}</option></select>
-                                <input type="number" id="balls-${curr.id}" placeholder="Bolas restantes na mesa" min="1" max="7" style="flex:1;">
-                                <button onclick="registrarResultadoLiga(${curr.id})" style="flex:1;">Salvar Resultado</button>
-                            </div>
-                        </div>
-                    `;
-                    // Próximos Jogos
+                    let curr = pendentes[0]; let hP = t.players.find(x => x.name === curr.pHome), aP = t.players.find(x => x.name === curr.pAway);
+                    container.innerHTML += `<div class="current-match-card"><div class="match-badge">🔥 JOGO ATUAL - TURNO ${curr.turno} 🔥</div><div class="vs-container"><div class="player-side"><div class="saida-indicator">Saída</div><img src="${hP.img}"><span class="vulgo-big">${hP.vulgo || hP.name}</span><span class="realname-text">${hP.name}</span></div><div class="vs-text">VS</div><div class="player-side"><img src="${aP.img}"><span class="vulgo-big">${aP.vulgo || aP.name}</span><span class="realname-text">${aP.name}</span></div></div><div class="form-group admin-only" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;"><select id="winner-${curr.id}" style="flex:1;"><option value="">Vencedor...</option><option value="${curr.pHome}">${hP.vulgo || hP.name}</option><option value="${curr.pAway}">${aP.vulgo || aP.name}</option></select><input type="number" id="balls-${curr.id}" placeholder="Bolas restantes" min="1" max="7" style="flex:1;"><button onclick="registrarResultadoLiga(${curr.id})" style="flex:1;">Salvar</button></div></div>`;
+                    
                     if (pendentes.length > 1) {
-                        container.innerHTML += `<h3>Próximos Confrontos (${pendentes.length - 1})</h3><div class="upcoming-list" id="upcomingList"></div>`;
+                        container.innerHTML += `<h3>Próximos Confrontos (${pendentes.length - 1})</h3><div class="upcoming-list" id="upcomingList" style="margin-bottom: 20px;"></div>`; 
                         const upList = document.getElementById('upcomingList');
-                        pendentes.slice(1).forEach(m => {
-                            let hp = t.players.find(x => x.name === m.pHome), ap = t.players.find(x => x.name === m.pAway);
-                            upList.innerHTML += `<div class="upcoming-item"><div class="upcoming-players"><span style="color:#aaa; font-size:0.8em; margin-right:10px;">T${m.turno}</span><img src="${hp.img}" class="tiny-avatar"> <strong>${hp.vulgo || hp.name}</strong> <span class="vs-mini">X</span> <strong>${ap.vulgo || ap.name}</strong> <img src="${ap.img}" class="tiny-avatar"></div></div>`;
-                        });
+                        pendentes.slice(1).forEach(m => { let hp = t.players.find(x => x.name === m.pHome), ap = t.players.find(x => x.name === m.pAway); upList.innerHTML += `<div class="upcoming-item"><div class="upcoming-players"><span style="color:#aaa; font-size:0.8em; margin-right:10px;">T${m.turno}</span><img src="${hp.img}" class="tiny-avatar"> <strong>${hp.vulgo || hp.name}</strong> <span class="vs-mini">X</span> <strong>${ap.vulgo || ap.name}</strong> <img src="${ap.img}" class="tiny-avatar"></div></div>`; });
                     }
-                } else {
-                    container.innerHTML = `<h3 style="text-align:center; color:#2ecc71; margin:40px 0;">Todos os jogos da Liga finalizados!</h3><button class="btn-start admin-only" onclick="iniciarMataMata()">Ir para Semifinais 🏆</button>`;
+                } else { 
+                    container.innerHTML = `<h3 style="text-align:center; color:#2ecc71; margin:40px 0;">Todos os jogos da Liga finalizados!</h3><button class="btn-start admin-only" onclick="iniciarMataMata()">Ir para Semifinais 🏆</button>`; 
                 }
+
+                // --- 2. HISTÓRICO DE JOGOS (Jogos Anteriores) ---
+                if (concluidos.length > 0) {
+                    container.innerHTML += `<h3 style="margin-top:20px; color:#aaa; border-top: 1px solid #333; padding-top: 15px;">Jogos Anteriores (${concluidos.length})</h3><div class="upcoming-list" id="completedList"></div>`;
+                    const compList = document.getElementById('completedList');
+                    
+                    // Coloca os mais recentes no topo
+                    [...concluidos].reverse().forEach(m => {
+                        let hp = t.players.find(x => x.name === m.pHome);
+                        let ap = t.players.find(x => x.name === m.pAway);
+                        let hVulgo = hp ? (hp.vulgo || hp.name) : m.pHome;
+                        let aVulgo = ap ? (ap.vulgo || ap.name) : m.pAway;
+
+                        // Verifica quem foi o vencedor para colocar a coroa
+                        let hDisplay = m.winnerName === m.pHome ? `<span class="winner-text">👑 ${hVulgo}</span>` : hVulgo;
+                        let aDisplay = m.winnerName === m.pAway ? `<span class="winner-text">👑 ${aVulgo}</span>` : aVulgo;
+
+                        compList.innerHTML += `
+                            <div class="completed-item">
+                                <div class="upcoming-players" style="justify-content: flex-start;">
+                                    <span style="color:#666; font-size:0.8em; margin-right:10px; min-width: 20px;">T${m.turno}</span>
+                                    <img src="${hp ? hp.img : ''}" class="tiny-avatar" style="opacity: ${m.winnerName===m.pHome?'1':'0.5'}">
+                                    <span style="flex:1; text-align:right;">${hDisplay}</span>
+                                    <span class="vs-mini">X</span>
+                                    <span style="flex:1; text-align:left;">${aDisplay}</span>
+                                    <img src="${ap ? ap.img : ''}" class="tiny-avatar" style="opacity: ${m.winnerName===m.pAway?'1':'0.5'}">
+                                </div>
+                                ${m.ballsLeft ? `<div style="font-size: 0.75em; color: #888; margin-left: 10px; text-align: right; min-width: 45px; background: #222; padding: 4px 6px; border-radius: 4px;">+${m.ballsLeft} 🎱</div>` : ''}
+                            </div>
+                        `;
+                    });
+                }
+
             } else if (['semis', 'terceiro', 'final'].includes(t.phase)) {
-                container.innerHTML = `<h2 style="color:var(--highlight);">Mata-Mata (Melhor de 3)</h2>`;
-                let k = t.knockout;
+                container.innerHTML = `<h2 style="color:var(--highlight);">Mata-Mata (Melhor de 3)</h2>`; let k = t.knockout;
                 let bo3 = (tit, id, d) => !d.p1 ? '' : `<div class="bo3-match"><h3>${tit}</h3><div class="bo3-players"><div class="bo3-player-card"><img src="${d.p1.img}"><div class="player-info"><span style="font-size:1.1em; font-weight:bold;">${d.p1.vulgo || d.p1.name}</span><span class="realname-text">${d.p1.name}</span></div>${d.completed?'':`<button class="admin-only" onclick="registrarVitoriaBo3('${id}', 1)">Venceu</button>`}</div><div class="bo3-score">${d.winsP1} x ${d.winsP2}</div><div class="bo3-player-card"><img src="${d.p2.img}"><div class="player-info"><span style="font-size:1.1em; font-weight:bold;">${d.p2.vulgo || d.p2.name}</span><span class="realname-text">${d.p2.name}</span></div>${d.completed?'':`<button class="admin-only" onclick="registrarVitoriaBo3('${id}', 2)">Venceu</button>`}</div></div>${d.completed?`<div style="color:var(--highlight); margin-top:10px;">Vencedor: ${d.winner.vulgo || d.winner.name}</div>`:''}</div>`;
-                if (t.phase === 'semis') { container.innerHTML += bo3('Semifinal 1', 'semi1', k.semi1) + bo3('Semifinal 2', 'semi2', k.semi2); }
-                else if (t.phase === 'terceiro') container.innerHTML += bo3('3º Lugar', 'terceiro', k.terceiro); else container.innerHTML += bo3('Final', 'final', k.final);
-            } else if (t.phase === 'podio') {
-                container.innerHTML = `<h3 style="text-align:center; margin:40px 0;">Campeonato finalizado! Vá para a aba Classificação para ver o Pódio.</h3>`;
-            }
+                if (t.phase === 'semis') { container.innerHTML += bo3('Semifinal 1', 'semi1', k.semi1) + bo3('Semifinal 2', 'semi2', k.semi2); } else if (t.phase === 'terceiro') container.innerHTML += bo3('3º Lugar', 'terceiro', k.terceiro); else container.innerHTML += bo3('Final', 'final', k.final);
+            } else if (t.phase === 'podio') { container.innerHTML = `<h3 style="text-align:center; margin:40px 0;">Campeonato finalizado! Vá para a aba Classificação para ver o Pódio.</h3>`; }
             return;
         }
 
-        // 4. Renderizar ABA CLASSIFICAÇÃO (Torneio Atual)
         t.players.sort((a, b) => b.points !== a.points ? b.points - a.points : (b.wins !== a.wins ? b.wins - a.wins : b.ballsBalance - a.ballsBalance));
         ['cadastro', 'tabela', 'podio'].forEach(id => document.getElementById('section-'+id).classList.add('hidden'));
 
@@ -513,7 +547,27 @@
 
         if (t.phase === 'cadastro') {
             document.getElementById('section-cadastro').classList.remove('hidden'); document.getElementById('section-tabela').classList.remove('hidden');
-            document.getElementById('listaJogadores').innerHTML = t.players.map(p => `<span class="badge">${p.vulgo || p.name}</span>`).join(' ') || 'Nenhum';
+            
+            const lista = document.getElementById('listaJogadores');
+            if (t.players.length === 0) {
+                lista.innerHTML = '<span style="color:#888;">Nenhum jogador cadastrado ainda.</span>';
+            } else {
+                lista.innerHTML = t.players.map(p => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#2c2c2c; padding:8px 12px; border-radius:6px; border-left:3px solid var(--highlight);">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <img src="${p.img}" style="width:35px; height:35px; border-radius:50%; object-fit:cover; border: 1px solid #555;">
+                            <div style="display:flex; flex-direction:column; line-height:1.1;">
+                                <span style="font-weight:bold;">${p.vulgo || p.name}</span>
+                                <span style="font-size:0.7em; color:#aaa;">${p.name}</span>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:5px;" class="admin-only">
+                            <button onclick="editarJogador('${p.name}')" style="background:var(--highlight); color:#000; width:auto; padding:6px 10px; font-size:0.9em; border-radius:4px;" title="Editar">✏️</button>
+                            <button onclick="removerJogador('${p.name}')" style="background:var(--danger); color:#fff; width:auto; padding:6px 10px; font-size:0.9em; border-radius:4px;" title="Remover">🗑️</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
         } else if (t.phase === 'liga' || ['semis', 'terceiro', 'final'].includes(t.phase)) {
             document.getElementById('section-tabela').classList.remove('hidden');
         } else if (t.phase === 'podio') {
