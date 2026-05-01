@@ -54,10 +54,11 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 500px; }
         th, td { padding: 12px; text-align: center; border-bottom: 1px solid #444; vertical-align: middle; }
         th { background-color: var(--green-table); }
-        .player-cell { display: flex; align-items: center; gap: 10px; text-align: left; }
-        .player-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--highlight); background: #333; flex-shrink: 0; }
-        .player-info { display: flex; flex-direction: column; justify-content: center; line-height: 1.2; }
-        .realname-text { font-size: 0.7em; color: #aaa; margin-top: 3px; font-weight: normal; }
+        
+        .player-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--highlight); background: #333; display: inline-block; vertical-align: middle; margin-right: 12px; }
+        .player-info { display: inline-block; vertical-align: middle; text-align: left; line-height: 1.2; white-space: normal; }
+        .vulgo-text { font-size: 1.1em; font-weight: bold; display: block; color: #fff; }
+        .realname-text { font-size: 0.75em; color: #aaa; margin-top: 2px; font-weight: normal; display: block; }
         
         .current-match-card { background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%); border: 2px solid var(--highlight); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.6); position: relative;}
         .match-badge { background: var(--highlight); color: #1a1a1a; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9em; display: inline-block; margin-bottom: 15px; letter-spacing: 1px; }
@@ -109,7 +110,7 @@
             h1 { font-size: 1.5em; width: 100%; margin-bottom: 5px; }
             .card { padding: 15px; }
             th, td { padding: 8px 5px; font-size: 0.9em; }
-            .player-img { width: 30px; height: 30px; }
+            .player-img { width: 35px; height: 35px; margin-right: 8px;}
             .vs-container { gap: 5px; }
             .player-side img { width: 70px; height: 70px; }
             .vs-text { font-size: 1.8em; }
@@ -143,7 +144,7 @@
 <!-- ================= MODAL PERFIL DO JOGADOR ================= -->
 <div id="playerModalOverlay" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:99999; display:flex; justify-content:center; align-items:center; padding: 20px;">
     <div class="card" style="width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; position: relative;">
-        <button onclick="fecharModalEstatisticas()" style="position: absolute; top: 10px; right: 10px; background: #444; border: none; font-size: 1.2em; width: 35px; height: 35px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center;">✖</button>
+        <button onclick="fecharModalEstatisticas()" style="position: absolute; top: 10px; right: 10px; background: #444; border: none; font-size: 1.2em; width: 35px; height: 35px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer;">✖</button>
         <div style="text-align: center;">
             <img id="modalImg" src="" style="width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--highlight); object-fit: cover;">
             <h2 id="modalVulgo" style="margin: 10px 0 5px 0;">Vulgo</h2>
@@ -334,7 +335,7 @@
     const db = getFirestore(app);
     const torneioDoc = doc(db, "sinuca_db", "dados_oficiais");
 
-    // Dicionário de Conquistas e Descrições
+    // Dicionário de Conquistas e Descrições (Chaves oficiais com Emojis)
     const conquistasDesc = {
         '🦓 Zebra': 'Estando em último lugar, ganhar do jogador que está em primeiro lugar.',
         '🎱 Rei da Mesa': 'Ganhar uma partida sem deixar o adversário matar nenhuma bola.',
@@ -362,7 +363,7 @@
         '🌪️ Implacável': 'Vencer 5 partidas seguidas na mesma edição.'
     };
 
-    // Mapeamento de nomes antigos sem emoji para as chaves novas corretas
+    // TRADUTOR: Traduz strings velhas do banco de dados para a string com Emoji na hora de exibir
     const fixOldAchievementsMap = {
         'Zebra': '🦓 Zebra', 'Rei da Mesa': '🎱 Rei da Mesa', 'Varredura': '🧹 Varredura', 'Invicto': '🛡️ Invicto', 
         'Sobrevivente': '💀 Sobrevivente', 'Cavalo Paraguaio': '🐎 Cavalo Paraguaio', 'Lanterneiro': '🔧 Lanterneiro', 
@@ -406,28 +407,8 @@
     window.state = null; let abaAtual = 'torneio';
 
     onSnapshot(torneioDoc, (docSnap) => {
-        if (docSnap.exists()) {
-            window.state = docSnap.data();
-            let dbNeedsFixing = false;
-
-            // SISTEMA AUTO-CORRETOR DE CONQUISTAS ANTIGAS
-            Object.values(window.state.globalStats).forEach(p => {
-                if (p.achievements && p.achievements.length > 0) {
-                    let updatedAch = p.achievements.map(a => {
-                        if (fixOldAchievementsMap[a]) { dbNeedsFixing = true; return fixOldAchievementsMap[a]; }
-                        return a;
-                    });
-                    p.achievements = [...new Set(updatedAch)]; // Garante que não duplica a conquista
-                }
-            });
-
-            // Se o Auto-Corretor detectou uma string antiga e você for Admin, salva a versão arrumada pra sempre
-            if (dbNeedsFixing && sessionStorage.getItem('sinucaRole') === 'admin') {
-                setDoc(torneioDoc, window.state);
-            }
-        } else { 
-            setDoc(torneioDoc, defaultState); window.state = defaultState; 
-        }
+        if (docSnap.exists()) window.state = docSnap.data();
+        else { setDoc(torneioDoc, defaultState); window.state = defaultState; }
         if (sessionStorage.getItem('sinucaRole')) renderInterface();
     });
 
@@ -460,10 +441,13 @@
             list.innerHTML = '<span style="color:#888; text-align:center; display:block; padding: 20px;">Este jogador ainda não possui conquistas.</span>';
         } else {
             list.innerHTML = p.achievements.map(a => {
-                let desc = conquistasDesc[a] || 'Descrição confidencial.';
+                // AQUI A MÁGICA ACONTECE: traduz pro nome com emoji se for string antiga
+                let fixedA = fixOldAchievementsMap[a] || a; 
+                let desc = conquistasDesc[fixedA] || 'Descrição confidencial.';
+                
                 return `
                 <div style="background:#2c2c2c; padding: 12px; border-radius: 6px; border-left: 4px solid var(--highlight); display: flex; flex-direction: column; text-align: left; transition: 0.2s;">
-                    <strong style="font-size: 1.1em; color: white;">${a}</strong>
+                    <strong style="font-size: 1.1em; color: white;">${fixedA}</strong>
                     <span style="font-size:0.85em; color:#aaa; margin-top: 3px;">${desc}</span>
                 </div>`;
             }).join('');
@@ -752,7 +736,9 @@
 
     window.resetarTudoHard = function() { if (prompt("Isso apaga TODOS os campeonatos passados. Digite 'APAGAR' para continuar:") === "APAGAR") { window.state = defaultState; window.salvarDados(); } }
 
-    function formatarNome(p) { return `<div class="player-info"><span style="font-size:1.1em; font-weight:bold;">${p.vulgo || p.name}</span><span class="realname-text">${p.name}</span></div>`; }
+    function formatarNome(p) { 
+        return `<span class="vulgo-text">${p.vulgo || p.name}</span><span class="realname-text">${p.name}</span>`; 
+    }
 
     function renderInterface() {
         if (!window.state) return;
@@ -788,8 +774,10 @@
                     let tdTitles = `<td><strong>${p.titles || 0}</strong> 🏆</td>`;
                     
                     let emojisHtml = (p.achievements || []).map(a => {
-                        let emoji = a.split(' ')[0];
-                        let desc = conquistasDesc[a] || '';
+                        // AQUI A MÁGICA ACONTECE TAMBÉM: Traduz pro icone na tabela global
+                        let fixedA = fixOldAchievementsMap[a] || a;
+                        let emoji = fixedA.split(' ')[0];
+                        let desc = conquistasDesc[fixedA] || 'Descrição confidencial.';
                         return `<span class="badge" title="${desc}">${emoji}</span>`;
                     }).join('');
 
@@ -800,7 +788,7 @@
                         </td>
                     `;
 
-                    tb.innerHTML += `<tr><td><div class="player-cell"><img src="${p.img}" class="player-img">${formatarNome(p)}</div></td>${tdTitles}<td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td>${tdConquistas}</tr>`;
+                    tb.innerHTML += `<tr><td style="text-align: left; white-space: nowrap;"><img src="${p.img}" class="player-img"><div class="player-info">${formatarNome(p)}</div></td>${tdTitles}<td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td>${tdConquistas}</tr>`;
                 });
             
             const hof = document.getElementById('hallOfFameContainer'); 
@@ -914,7 +902,7 @@
                 if (t.hasKnockout && i < 4) destaque = 'background:rgba(46,204,113,0.1)';
                 else if (!t.hasKnockout && i === 0) destaque = 'background:rgba(255,215,0,0.1)'; 
             }
-            tbody.innerHTML += `<tr style="${destaque}"><td>${i+1}º</td><td><div class="player-cell"><img src="${p.img}" class="player-img">${formatarNome(p)}</div></td><td><strong>${p.points}</strong></td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td></tr>`;
+            tbody.innerHTML += `<tr style="${destaque}"><td>${i+1}º</td><td style="text-align: left; white-space: nowrap;"><img src="${p.img}" class="player-img"><div class="player-info">${formatarNome(p)}</div></td><td><strong>${p.points}</strong></td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td></tr>`;
         });
 
         if (t.phase === 'cadastro') {
