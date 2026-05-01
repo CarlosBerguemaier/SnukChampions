@@ -362,6 +362,17 @@
         '🌪️ Implacável': 'Vencer 5 partidas seguidas na mesma edição.'
     };
 
+    // Mapeamento de nomes antigos sem emoji para as chaves novas corretas
+    const fixOldAchievementsMap = {
+        'Zebra': '🦓 Zebra', 'Rei da Mesa': '🎱 Rei da Mesa', 'Varredura': '🧹 Varredura', 'Invicto': '🛡️ Invicto', 
+        'Sobrevivente': '💀 Sobrevivente', 'Cavalo Paraguaio': '🐎 Cavalo Paraguaio', 'Lanterneiro': '🔧 Lanterneiro', 
+        'Saco de Pancadas': '💔 Saco de Pancadas', 'Ponto de Honra': '🤝 Ponto de Honra', 'Primeiro Caneco': '🥇 Primeiro Caneco', 
+        'Bi-Campeão': '🏆 Bi-Campeão', 'Global Elite': '🎯 Global Elite', 'Pipoqueiro': '🥵 Pipoqueiro', 'O Eterno Terceiro': '🥉 O Eterno Terceiro', 
+        'Veterano': '🏅 Veterano', 'Centenário': '💯 Centenário', 'Demolidor': '🧨 Demolidor', 'Fundo do Poço': '🕳️ Fundo do Poço', 
+        'Por um Fio': '🤏 Por um Fio', 'Em Chamas': '🔥 Em Chamas', 'Saiu da UTI': '🚑 Saiu da UTI', 'O Vingador': '🥊 O Vingador', 
+        'Cartão Fidelidade': '💳 Cartão Fidelidade', 'Implacável': '🌪️ Implacável'
+    };
+
     window.entrarComoAdmin = function() {
         if (document.getElementById('adminUser').value === 'admin' && document.getElementById('adminPass').value === 'admin-snuk') {
             sessionStorage.setItem('sinucaRole', 'admin'); iniciarAppGrafica();
@@ -395,8 +406,28 @@
     window.state = null; let abaAtual = 'torneio';
 
     onSnapshot(torneioDoc, (docSnap) => {
-        if (docSnap.exists()) window.state = docSnap.data();
-        else { setDoc(torneioDoc, defaultState); window.state = defaultState; }
+        if (docSnap.exists()) {
+            window.state = docSnap.data();
+            let dbNeedsFixing = false;
+
+            // SISTEMA AUTO-CORRETOR DE CONQUISTAS ANTIGAS
+            Object.values(window.state.globalStats).forEach(p => {
+                if (p.achievements && p.achievements.length > 0) {
+                    let updatedAch = p.achievements.map(a => {
+                        if (fixOldAchievementsMap[a]) { dbNeedsFixing = true; return fixOldAchievementsMap[a]; }
+                        return a;
+                    });
+                    p.achievements = [...new Set(updatedAch)]; // Garante que não duplica a conquista
+                }
+            });
+
+            // Se o Auto-Corretor detectou uma string antiga e você for Admin, salva a versão arrumada pra sempre
+            if (dbNeedsFixing && sessionStorage.getItem('sinucaRole') === 'admin') {
+                setDoc(torneioDoc, window.state);
+            }
+        } else { 
+            setDoc(torneioDoc, defaultState); window.state = defaultState; 
+        }
         if (sessionStorage.getItem('sinucaRole')) renderInterface();
     });
 
@@ -619,7 +650,6 @@
         }
         l.currentWinStreak = 0; l.currentLossStreak++;
 
-        // APLICA O SISTEMA DE PONTUAÇÃO ESCOLHIDO
         w.matches++; 
         w.wins++; 
         w.points += (window.state.torneio.scoringSystem === 'soma_bolas' ? (3 + b) : 3); 
