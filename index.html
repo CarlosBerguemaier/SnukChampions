@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎱</text></svg>">
     <title>SNUK CHAMPIONS</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
@@ -41,6 +42,7 @@
         .form-group { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; flex-wrap: wrap; justify-content: center;}
         input, select, button { padding: 10px; border-radius: 4px; border: 1px solid #444; background: #333; color: white; box-sizing: border-box; }
         input[type="file"] { flex: 1; min-width: 200px; background: #222; cursor: pointer; }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
         button { background-color: var(--green-table); cursor: pointer; font-weight: bold; transition: 0.2s; border: none; width: 100%; }
         button:hover { background-color: #15803e; }
         .btn-start { background-color: var(--highlight); color: #1a1a1a; width: 100%; font-size: 1.1em; padding: 15px; margin-top: 10px; }
@@ -197,13 +199,33 @@
                 <div id="listaJogadores" style="display: flex; flex-direction: column; gap: 8px;"></div>
             </div>
 
-            <div class="form-group admin-only" style="margin-top: 25px; justify-content: center; background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444;">
-                <label for="qtdTurnos" style="color: #f4f4f4; font-weight: bold;">Formato da Liga:</label>
-                <select id="qtdTurnos" style="width: auto; flex: 1; min-width: 200px;">
-                    <option value="1">1 Turno (Todos vs Todos 1x)</option>
-                    <option value="2">2 Turnos (Ida e Volta)</option>
-                    <option value="3">3 Turnos (Longo)</option>
-                </select>
+            <div class="form-group admin-only" style="margin-top: 25px; justify-content: center; background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444; flex-direction: column; align-items: stretch;">
+                <h3 style="margin-top:0; color:#f4f4f4; text-align:center; margin-bottom: 15px;">⚙️ Configurações do Campeonato</h3>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    
+                    <div style="flex:1; min-width: 180px;">
+                        <label style="display:block; font-size:0.8em; color:#aaa; margin-bottom:5px;">Formato de Jogos</label>
+                        <select id="qtdTurnos" style="width: 100%;">
+                            <option value="1">1 Turno (Todos vs Todos 1x)</option>
+                            <option value="2">2 Turnos (Ida e Volta)</option>
+                            <option value="3">3 Turnos (Longo)</option>
+                        </select>
+                    </div>
+
+                    <div style="flex:1; min-width: 180px;">
+                        <label style="display:block; font-size:0.8em; color:#aaa; margin-bottom:5px;">Terá Mata-Mata?</label>
+                        <select id="temMataMata" style="width: 100%;">
+                            <option value="sim">Sim (Semifinal e Final)</option>
+                            <option value="nao">Não (Pontos Corridos - Líder é Campeão)</option>
+                        </select>
+                    </div>
+
+                    <div style="flex:1; min-width: 180px;">
+                        <label style="display:block; font-size:0.8em; color:#aaa; margin-bottom:5px;">Data (Vazio = Hoje)</label>
+                        <input type="date" id="dataAntiga" style="width: 100%;" title="Use para adicionar campeonatos antigos">
+                    </div>
+
+                </div>
             </div>
 
             <button class="btn-start" onclick="iniciarCampeonato()">Iniciar Campeonato</button>
@@ -306,7 +328,7 @@
     window.onload = function() { if (sessionStorage.getItem('sinucaRole')) iniciarAppGrafica(); }
 
     let defaultState = {
-        torneio: { phase: 'cadastro', players: [], matches: [], lastPlaceName: null, seed4Name: null, knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } }, podium: { first: null, second: null, third: null } },
+        torneio: { phase: 'cadastro', players: [], matches: [], lastPlaceName: null, seed4Name: null, seed1Name: null, hasKnockout: true, customDate: '', knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } }, podium: { first: null, second: null, third: null } },
         globalStats: {}, hallOfFame: []
     };
 
@@ -339,17 +361,19 @@
                 if (gs) { gs.matches -= p.matches; gs.wins -= p.wins; gs.losses -= p.losses; gs.ballsBalance -= p.ballsBalance; }
             });
             let k = window.state.torneio.knockout;
-            ['semi1', 'semi2', 'terceiro', 'final'].forEach(fase => {
-                let m = k[fase];
-                if (m && m.completed) {
-                    if (window.state.globalStats[m.winner.name]) { window.state.globalStats[m.winner.name].matches--; window.state.globalStats[m.winner.name].wins--; }
-                    if (window.state.globalStats[m.loser.name]) window.state.globalStats[m.loser.name].matches--;
-                }
-            });
+            if(k) {
+                ['semi1', 'semi2', 'terceiro', 'final'].forEach(fase => {
+                    let m = k[fase];
+                    if (m && m.completed) {
+                        if (window.state.globalStats[m.winner.name]) { window.state.globalStats[m.winner.name].matches--; window.state.globalStats[m.winner.name].wins--; }
+                        if (window.state.globalStats[m.loser.name]) window.state.globalStats[m.loser.name].matches--;
+                    }
+                });
+            }
             Object.keys(window.state.globalStats).forEach(name => { if (window.state.globalStats[name].matches <= 0) delete window.state.globalStats[name]; });
             
             window.state.torneio = {
-                phase: 'cadastro', players: [], matches: [], lastPlaceName: null, seed4Name: null,
+                phase: 'cadastro', players: [], matches: [], lastPlaceName: null, seed4Name: null, seed1Name: null, hasKnockout: true, customDate: '',
                 knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } }, 
                 podium: { first: null, second: null, third: null }
             };
@@ -362,12 +386,33 @@
         else { if(p.img) window.state.globalStats[p.name].img = p.img; if(p.vulgo) window.state.globalStats[p.name].vulgo = p.vulgo; }
     }
 
+    // Gerenciador Inteligente de Conquistas Globais
+    function checkGlobalAchievements(name) {
+        if(!window.state.globalStats[name]) return;
+        let gs = window.state.globalStats[name];
+        let achs = gs.achievements || [];
+        
+        const award = (b) => { if (!achs.includes(b)) achs.push(b); };
+
+        if (gs.titles >= 1) award('🥇 Primeiro Caneco');
+        if (gs.titles >= 2) award('🏆 Bi-Campeão');
+        if (gs.titles >= 5) award('🎯 Global Elite');
+        if (gs.finalsLost >= 3) award('🥵 Pipoqueiro');
+        if (gs.thirdPlaces >= 2) award('🥉 O Eterno Terceiro');
+        if (gs.matches >= 50) award('🏅 Veterano');
+        if (gs.matches >= 100) award('💯 Centenário');
+        if (gs.ballsBalance >= 50) award('🧨 Demolidor');
+        if (gs.ballsBalance <= -50) award('🕳️ Fundo do Poço');
+        
+        gs.achievements = achs;
+    }
+
     window.adicionarJogadorExistente = function() {
         const name = document.getElementById('existingPlayerSelect').value;
         if (!name) return alert("Selecione um jogador na lista!");
         
         let dbData = window.state.globalStats[name];
-        let np = { name: name, vulgo: dbData.vulgo, img: dbData.img, matches: 0, wins: 0, losses: 0, points: 0, ballsBalance: 0 };
+        let np = { name: name, vulgo: dbData.vulgo, img: dbData.img, matches: 0, wins: 0, losses: 0, points: 0, ballsBalance: 0, currentWinStreak: 0, currentLossStreak: 0 };
         window.state.torneio.players.push(np);
         window.salvarDados();
     }
@@ -397,7 +442,7 @@
     }
 
     function salvarNovoJogador(name, vulgo, imgData) {
-        let np = { name, vulgo, img: imgData, matches: 0, wins: 0, losses: 0, points: 0, ballsBalance: 0 };
+        let np = { name, vulgo, img: imgData, matches: 0, wins: 0, losses: 0, points: 0, ballsBalance: 0, currentWinStreak: 0, currentLossStreak: 0 };
         window.state.torneio.players.push(np); registrarNoGlobal(np);
         document.getElementById('playerName').value = ''; document.getElementById('playerVulgo').value = ''; document.getElementById('playerImgFile').value = ''; 
         window.salvarDados(); 
@@ -422,6 +467,10 @@
         let p = [...window.state.torneio.players]; if (p.length < 4) return alert("Mínimo 4 jogadores!");
         let turnos = parseInt(document.getElementById('qtdTurnos').value) || 1;
         
+        window.state.torneio.hasKnockout = document.getElementById('temMataMata').value === 'sim';
+        let dataA = document.getElementById('dataAntiga').value;
+        window.state.torneio.customDate = dataA ? dataA.split('-').reverse().join('/') : '';
+        
         if (p.length % 2 !== 0) p.push({ name: 'FOLGA', vulgo: 'FOLGA' }); 
         let n = p.length; let id = 0;
         for (let t = 1; t <= turnos; t++) {
@@ -436,6 +485,8 @@
                 tp.splice(1, 0, tp.pop());
             }
         }
+        
+        window.state.torneio.players.forEach(pl => { pl.currentWinStreak = 0; pl.currentLossStreak = 0; });
         window.state.torneio.phase = 'liga'; window.salvarDados();
     }
 
@@ -449,14 +500,59 @@
         const w = window.state.torneio.players.find(p => p.name === wName);
         const l = window.state.torneio.players.find(p => p.name === lName);
 
+        w.currentWinStreak = w.currentWinStreak || 0;
+        w.currentLossStreak = w.currentLossStreak || 0;
+        l.currentWinStreak = l.currentWinStreak || 0;
+        l.currentLossStreak = l.currentLossStreak || 0;
+
+        // CONQUISTA: Zebra
         let rank = [...window.state.torneio.players].sort((x,y) => y.points - x.points);
         if (w.matches > 0 && w.name === rank[rank.length - 1].name && l.name === rank[0].name) {
             if (!window.state.globalStats[w.name].achievements.includes('🦓 Zebra')) window.state.globalStats[w.name].achievements.push('🦓 Zebra');
         }
 
+        // CONQUISTA: Rei da Mesa
         if (b === 7) {
             if (!window.state.globalStats[w.name].achievements.includes('🎱 Rei da Mesa')) window.state.globalStats[w.name].achievements.push('🎱 Rei da Mesa');
         }
+
+        // CONQUISTA: Por um Fio
+        if (b === 1) {
+            if (!window.state.globalStats[w.name].achievements.includes('🤏 Por um Fio')) window.state.globalStats[w.name].achievements.push('🤏 Por um Fio');
+        }
+
+        // CONQUISTA: O Vingador
+        let pastLoss = window.state.torneio.matches.find(pastM => pastM.completed && pastM.winnerName === l.name && (pastM.pHome === w.name || pastM.pAway === w.name));
+        if (pastLoss) {
+            if (!window.state.globalStats[w.name].achievements.includes('🥊 O Vingador')) window.state.globalStats[w.name].achievements.push('🥊 O Vingador');
+        }
+
+        // CONQUISTA: Cartão Fidelidade (Ganhar do mesmo jogador de novo na mesma edição)
+        let pastWin = window.state.torneio.matches.find(pastM => pastM.completed && pastM.winnerName === w.name && (pastM.pHome === l.name || pastM.pAway === l.name) && pastM.id !== id);
+        if (pastWin) {
+            if (!window.state.globalStats[w.name].achievements.includes('💳 Cartão Fidelidade')) window.state.globalStats[w.name].achievements.push('💳 Cartão Fidelidade');
+        }
+
+        // CONQUISTA: Saiu da UTI
+        if (w.currentLossStreak >= 3) {
+            if (!window.state.globalStats[w.name].achievements.includes('🚑 Saiu da UTI')) window.state.globalStats[w.name].achievements.push('🚑 Saiu da UTI');
+        }
+
+        w.currentLossStreak = 0;
+        w.currentWinStreak++;
+        
+        // CONQUISTA: Em Chamas (3 seguidas)
+        if (w.currentWinStreak === 3) {
+            if (!window.state.globalStats[w.name].achievements.includes('🔥 Em Chamas')) window.state.globalStats[w.name].achievements.push('🔥 Em Chamas');
+        }
+
+        // CONQUISTA: Implacável (5 seguidas)
+        if (w.currentWinStreak === 5) {
+            if (!window.state.globalStats[w.name].achievements.includes('🌪️ Implacável')) window.state.globalStats[w.name].achievements.push('🌪️ Implacável');
+        }
+
+        l.currentWinStreak = 0;
+        l.currentLossStreak++;
 
         w.matches++; w.wins++; w.points += (3 + b); w.ballsBalance += b; 
         l.matches++; l.losses++; l.ballsBalance -= b;
@@ -465,6 +561,9 @@
 
         window.state.globalStats[w.name].matches++; window.state.globalStats[w.name].wins++; window.state.globalStats[w.name].ballsBalance += b;
         window.state.globalStats[lName].matches++; window.state.globalStats[lName].losses++; window.state.globalStats[lName].ballsBalance -= b;
+        
+        checkGlobalAchievements(wName);
+        checkGlobalAchievements(lName);
         window.salvarDados();
     }
 
@@ -472,12 +571,27 @@
         window.state.torneio.players.sort((a, b) => b.points !== a.points ? b.points - a.points : (b.wins !== a.wins ? b.wins - a.wins : b.ballsBalance - a.ballsBalance));
         const t4 = window.state.torneio.players.slice(0, 4); 
         
+        window.state.torneio.seed1Name = t4[0].name;
         window.state.torneio.seed4Name = t4[3].name;
         window.state.torneio.lastPlaceName = window.state.torneio.players[window.state.torneio.players.length - 1].name;
 
         let k = window.state.torneio.knockout;
         k.semi1.p1 = t4[0]; k.semi1.p2 = t4[3]; k.semi2.p1 = t4[1]; k.semi2.p2 = t4[2]; 
         window.state.torneio.phase = 'semis'; window.salvarDados();
+    }
+
+    window.finalizarPontosCorridos = function() {
+        window.state.torneio.players.sort((a, b) => b.points !== a.points ? b.points - a.points : (b.wins !== a.wins ? b.wins - a.wins : b.ballsBalance - a.ballsBalance));
+        let t = window.state.torneio;
+        
+        t.podium.first = t.players[0];
+        t.podium.second = t.players[1];
+        t.podium.third = t.players[2];
+        t.lastPlaceName = t.players[t.players.length - 1].name;
+        
+        t.phase = 'podio';
+        dispararConfetes();
+        window.salvarDados();
     }
 
     window.registrarVitoriaBo3 = function(fase, n) {
@@ -492,6 +606,9 @@
             window.state.globalStats[m.winner.name].matches++; window.state.globalStats[m.winner.name].wins++;
             window.state.globalStats[m.loser.name].matches++; window.state.globalStats[m.loser.name].losses++;
             let localL = window.state.torneio.players.find(p => p.name === m.loser.name); if(localL) localL.losses++;
+            
+            checkGlobalAchievements(m.winner.name);
+            checkGlobalAchievements(m.loser.name);
         }
         let t = window.state.torneio;
         if (t.phase === 'semis' && t.knockout.semi1.completed && t.knockout.semi2.completed) {
@@ -504,31 +621,24 @@
 
     window.iniciarNovaEdicao = function() {
         let t = window.state.torneio; 
-        
-        let p1Name = t.podium.first.name, p2Name = t.podium.second.name, p3Name = t.podium.third.name;
+        let p1Name = t.podium.first.name, p2Name = t.podium.second.name, p3Name = t.podium.third ? t.podium.third.name : null;
         
         let cLocal = t.players.find(p => p.name === p1Name);
         if (cLocal && cLocal.losses === 0 && !window.state.globalStats[p1Name].achievements.includes('🛡️ Invicto')) {
             window.state.globalStats[p1Name].achievements.push('🛡️ Invicto');
         }
 
-        window.state.globalStats[p1Name].titles = (window.state.globalStats[p1Name].titles || 0) + 1;
-        if (window.state.globalStats[p1Name].titles >= 5 && !window.state.globalStats[p1Name].achievements.includes('🎯 Global Elite')) {
-            window.state.globalStats[p1Name].achievements.push('🎯 Global Elite');
-        }
-
-        if (p1Name === t.seed4Name && !window.state.globalStats[p1Name].achievements.includes('💀 Sobrevivente')) {
+        if (t.hasKnockout && p1Name === t.seed4Name && !window.state.globalStats[p1Name].achievements.includes('💀 Sobrevivente')) {
             window.state.globalStats[p1Name].achievements.push('💀 Sobrevivente');
         }
 
-        window.state.globalStats[p2Name].finalsLost = (window.state.globalStats[p2Name].finalsLost || 0) + 1;
-        if (window.state.globalStats[p2Name].finalsLost >= 3 && !window.state.globalStats[p2Name].achievements.includes('🥵 Pipoqueiro')) {
-            window.state.globalStats[p2Name].achievements.push('🥵 Pipoqueiro');
-        }
-
-        window.state.globalStats[p3Name].thirdPlaces = (window.state.globalStats[p3Name].thirdPlaces || 0) + 1;
-        if (window.state.globalStats[p3Name].thirdPlaces >= 2 && !window.state.globalStats[p3Name].achievements.includes('🥉 O Eterno Terceiro')) {
-            window.state.globalStats[p3Name].achievements.push('🥉 O Eterno Terceiro');
+        if (t.hasKnockout && t.seed1Name) {
+            if ((t.knockout.semi1.completed && t.knockout.semi1.loser.name === t.seed1Name) || 
+                (t.knockout.semi2.completed && t.knockout.semi2.loser.name === t.seed1Name)) {
+                if (!window.state.globalStats[t.seed1Name].achievements.includes('🐎 Cavalo Paraguaio')) {
+                    window.state.globalStats[t.seed1Name].achievements.push('🐎 Cavalo Paraguaio');
+                }
+            }
         }
 
         if (t.lastPlaceName) {
@@ -536,8 +646,28 @@
                 window.state.globalStats[t.lastPlaceName].achievements.push('🔧 Lanterneiro');
             }
         }
+
+        t.players.forEach(p => {
+            if (p.matches > 0 && p.wins === 0) {
+                if (!window.state.globalStats[p.name].achievements.includes('💔 Saco de Pancadas')) {
+                    window.state.globalStats[p.name].achievements.push('💔 Saco de Pancadas');
+                }
+            }
+            if (p.matches >= 3 && p.wins === 1) {
+                if (!window.state.globalStats[p.name].achievements.includes('🤝 Ponto de Honra')) {
+                    window.state.globalStats[p.name].achievements.push('🤝 Ponto de Honra');
+                }
+            }
+        });
         
-        let dataHora = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+        window.state.globalStats[p1Name].titles = (window.state.globalStats[p1Name].titles || 0) + 1;
+        if (p2Name) window.state.globalStats[p2Name].finalsLost = (window.state.globalStats[p2Name].finalsLost || 0) + 1;
+        if (p3Name) window.state.globalStats[p3Name].thirdPlaces = (window.state.globalStats[p3Name].thirdPlaces || 0) + 1;
+
+        t.players.forEach(p => checkGlobalAchievements(p.name));
+        
+        let dataHora = t.customDate ? t.customDate : (new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}));
+        
         window.state.hallOfFame.push({ 
             date: dataHora, 
             podium: { first: t.podium.first, second: t.podium.second, third: t.podium.third },
@@ -545,7 +675,7 @@
         });
         
         window.state.torneio = {
-            phase: 'cadastro', players: [], matches: [], lastPlaceName: null, seed4Name: null,
+            phase: 'cadastro', players: [], matches: [], lastPlaceName: null, seed4Name: null, seed1Name: null, hasKnockout: true, customDate: '',
             knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } }, 
             podium: { first: null, second: null, third: null }
         };
@@ -564,7 +694,7 @@
             const u = window.state.hallOfFame[window.state.hallOfFame.length - 1];
             vTxt.textContent = u.podium.first.vulgo || u.podium.first.name; nTxt.textContent = u.podium.first.name; img.src = u.podium.first.img;
         } else {
-            vTxt.textContent = "Fernando"; nTxt.textContent = "Fernando"; img.src = "https://ui-avatars.com/api/?name=Fernando&background=FFD700&color=000";
+            vTxt.textContent = "Nenhum Campeão"; nTxt.textContent = "Nenhum Campeão"; img.src = "https://ui-avatars.com/api/?name=Campeão&background=FFD700&color=000";
         }
 
         let t = window.state.torneio;
@@ -584,12 +714,11 @@
 
         if (abaAtual === 'global') {
             const tb = document.getElementById('globalStatsBody'); tb.innerHTML = '';
-            // Agora ordena por Títulos primeiro, depois por Vitórias
             Object.entries(window.state.globalStats).map(([name, d]) => ({ name, ...d }))
                 .sort((a,b) => (b.titles || 0) !== (a.titles || 0) ? (b.titles || 0) - (a.titles || 0) : b.wins - a.wins)
                 .forEach(p => {
                     let tdTitles = `<td><strong>${p.titles || 0}</strong> 🏆</td>`;
-                    tb.innerHTML += `<tr><td class="player-cell"><img src="${p.img}" class="player-img">${formatarNome(p)}</td>${tdTitles}<td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td><td><div class="achievements">${p.achievements.map(b=>`<span class="badge">${b}</span>`).join('')}</div></td></tr>`;
+                    tb.innerHTML += `<tr><td class="player-cell"><img src="${p.img}" class="player-img">${formatarNome(p)}</td>${tdTitles}<td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td><td><div class="achievements">${(p.achievements||[]).map(b=>`<span class="badge">${b}</span>`).join('')}</div></td></tr>`;
                 });
             
             const hof = document.getElementById('hallOfFameContainer'); 
@@ -619,8 +748,7 @@
                                 <strong>🏆 ${ed.podium.first.vulgo || ed.podium.first.name}</strong>
                             </div>
                             <div style="width:30%;">
-                                <img src="${ed.podium.third.img}" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--bronze); object-fit: cover;"><br>
-                                <span style="font-size:0.9em;">3º ${ed.podium.third.vulgo || ed.podium.third.name}</span>
+                                ${ed.podium.third ? `<img src="${ed.podium.third.img}" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--bronze); object-fit: cover;"><br><span style="font-size:0.9em;">3º ${ed.podium.third.vulgo || ed.podium.third.name}</span>` : ''}
                             </div>
                         </div>
                         ${tHtml}
@@ -649,7 +777,11 @@
                         pendentes.slice(1).forEach(m => { let hp = t.players.find(x => x.name === m.pHome), ap = t.players.find(x => x.name === m.pAway); upList.innerHTML += `<div class="upcoming-item"><div class="upcoming-players"><span style="color:#aaa; font-size:0.8em; margin-right:10px;">T${m.turno}</span><img src="${hp.img}" class="tiny-avatar"> <strong>${hp.vulgo || hp.name}</strong> <span class="vs-mini">X</span> <strong>${ap.vulgo || ap.name}</strong> <img src="${ap.img}" class="tiny-avatar"></div></div>`; });
                     }
                 } else { 
-                    container.innerHTML = `<h3 style="text-align:center; color:#2ecc71; margin:40px 0;">Todos os jogos da Liga finalizados!</h3><button class="btn-start admin-only" onclick="iniciarMataMata()">Ir para Semifinais 🏆</button>`; 
+                    if (t.hasKnockout) {
+                        container.innerHTML = `<h3 style="text-align:center; color:#2ecc71; margin:40px 0;">Todos os jogos da Liga finalizados!</h3><button class="btn-start admin-only" onclick="iniciarMataMata()">Ir para Semifinais 🏆</button>`; 
+                    } else {
+                        container.innerHTML = `<h3 style="text-align:center; color:#2ecc71; margin:40px 0;">Todos os jogos finalizados! (Pontos Corridos)</h3><button class="btn-start admin-only" onclick="finalizarPontosCorridos()">Encerrar e Ver Pódio 🏆</button>`; 
+                    }
                 }
 
                 if (concluidos.length > 0) {
@@ -693,7 +825,15 @@
         ['cadastro', 'tabela', 'podio'].forEach(id => document.getElementById('section-'+id).classList.add('hidden'));
 
         const tbody = document.querySelector('#standingsTable tbody'); tbody.innerHTML = '';
-        t.players.forEach((p, i) => tbody.innerHTML += `<tr style="${t.phase!=='cadastro'&&i<4?'background:rgba(46,204,113,0.1)':''}"><td>${i+1}º</td><td class="player-cell"><img src="${p.img}" class="player-img">${formatarNome(p)}</td><td><strong>${p.points}</strong></td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td></tr>`);
+        
+        t.players.forEach((p, i) => {
+            let destaque = '';
+            if (t.phase !== 'cadastro') {
+                if (t.hasKnockout && i < 4) destaque = 'background:rgba(46,204,113,0.1)';
+                else if (!t.hasKnockout && i === 0) destaque = 'background:rgba(255,215,0,0.1)'; 
+            }
+            tbody.innerHTML += `<tr style="${destaque}"><td>${i+1}º</td><td class="player-cell"><img src="${p.img}" class="player-img">${formatarNome(p)}</td><td><strong>${p.points}</strong></td><td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td></tr>`;
+        });
 
         if (t.phase === 'cadastro') {
             document.getElementById('section-cadastro').classList.remove('hidden'); document.getElementById('section-tabela').classList.remove('hidden');
@@ -722,7 +862,14 @@
             document.getElementById('section-tabela').classList.remove('hidden');
         } else if (t.phase === 'podio') {
             document.getElementById('section-podio').classList.remove('hidden'); document.getElementById('campeaoTexto').textContent = `${t.podium.first.vulgo || t.podium.first.name} É O CAMPEÃO! 🏆`;
-            document.getElementById('podiumContainer').innerHTML = `<div class="podium-step step-2"><img src="${t.podium.second.img}" class="podium-player-img" style="border-color:var(--silver)"><span style="font-size:0.7em;">2º ${t.podium.second.vulgo || t.podium.second.name}</span></div><div class="podium-step step-1"><img src="${t.podium.first.img}" class="podium-player-img" style="border-color:var(--gold); width:90px; height:90px; top:-50px;"><span style="font-size:0.7em;">1º ${t.podium.first.vulgo || t.podium.first.name}</span></div><div class="podium-step step-3"><img src="${t.podium.third.img}" class="podium-player-img" style="border-color:var(--bronze)"><span style="font-size:0.7em;">3º ${t.podium.third.vulgo || t.podium.third.name}</span></div>`;
+            
+            let htmlPodio = `<div class="podium-step step-2"><img src="${t.podium.second.img}" class="podium-player-img" style="border-color:var(--silver)"><span style="font-size:0.7em;">2º ${t.podium.second.vulgo || t.podium.second.name}</span></div><div class="podium-step step-1"><img src="${t.podium.first.img}" class="podium-player-img" style="border-color:var(--gold); width:90px; height:90px; top:-50px;"><span style="font-size:0.7em;">1º ${t.podium.first.vulgo || t.podium.first.name}</span></div>`;
+            
+            if(t.podium.third) {
+                htmlPodio += `<div class="podium-step step-3"><img src="${t.podium.third.img}" class="podium-player-img" style="border-color:var(--bronze)"><span style="font-size:0.7em;">3º ${t.podium.third.vulgo || t.podium.third.name}</span></div>`;
+            }
+            
+            document.getElementById('podiumContainer').innerHTML = htmlPodio;
         }
     }
 
