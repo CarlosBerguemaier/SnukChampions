@@ -237,6 +237,14 @@
                     </div>
 
                     <div style="flex:1; min-width: 180px;">
+                        <label style="display:block; font-size:0.8em; color:#aaa; margin-bottom:5px;">Pontuação</label>
+                        <select id="sistemaPontuacao" style="width: 100%;">
+                            <option value="padrao">3 Pts por Vitória (Saldo desempata)</option>
+                            <option value="soma_bolas">3 Pts + Saldo de Bolas</option>
+                        </select>
+                    </div>
+
+                    <div style="flex:1; min-width: 180px;">
                         <label style="display:block; font-size:0.8em; color:#aaa; margin-bottom:5px;">Terá Mata-Mata?</label>
                         <select id="temMataMata" style="width: 100%;">
                             <option value="sim">Sim (Semifinal e Final)</option>
@@ -380,7 +388,7 @@
     window.onload = function() { if (sessionStorage.getItem('sinucaRole')) iniciarAppGrafica(); }
 
     let defaultState = {
-        torneio: { phase: 'cadastro', players: [], matches: [], lastPlaceName: null, seed4Name: null, seed1Name: null, hasKnockout: true, customDate: '', knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } }, podium: { first: null, second: null, third: null } },
+        torneio: { phase: 'cadastro', players: [], matches: [], lastPlaceName: null, seed4Name: null, seed1Name: null, hasKnockout: true, customDate: '', scoringSystem: 'padrao', knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } }, podium: { first: null, second: null, third: null } },
         globalStats: {}, hallOfFame: []
     };
 
@@ -453,7 +461,7 @@
             Object.keys(window.state.globalStats).forEach(name => { if (window.state.globalStats[name].matches <= 0) delete window.state.globalStats[name]; });
             
             window.state.torneio = {
-                phase: 'cadastro', players: [], matches: [], lastPlaceName: null, seed4Name: null, seed1Name: null, hasKnockout: true, customDate: '',
+                phase: 'cadastro', players: [], matches: [], lastPlaceName: null, seed4Name: null, seed1Name: null, hasKnockout: true, customDate: '', scoringSystem: 'padrao',
                 knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } }, 
                 podium: { first: null, second: null, third: null }
             };
@@ -543,6 +551,7 @@
         let turnos = parseInt(document.getElementById('qtdTurnos').value) || 1;
         
         window.state.torneio.hasKnockout = document.getElementById('temMataMata').value === 'sim';
+        window.state.torneio.scoringSystem = document.getElementById('sistemaPontuacao').value || 'padrao';
         let dataA = document.getElementById('dataAntiga').value;
         window.state.torneio.customDate = dataA ? dataA.split('-').reverse().join('/') : '';
         
@@ -610,8 +619,16 @@
         }
         l.currentWinStreak = 0; l.currentLossStreak++;
 
-        w.matches++; w.wins++; w.points += (3 + b); w.ballsBalance += b; 
-        l.matches++; l.losses++; l.ballsBalance -= b;
+        // APLICA O SISTEMA DE PONTUAÇÃO ESCOLHIDO
+        w.matches++; 
+        w.wins++; 
+        w.points += (window.state.torneio.scoringSystem === 'soma_bolas' ? (3 + b) : 3); 
+        w.ballsBalance += b; 
+        
+        l.matches++; 
+        l.losses++; 
+        l.ballsBalance -= b;
+        
         m.completed = true; m.winnerName = wName; m.ballsLeft = b;
 
         window.state.globalStats[w.name].matches++; window.state.globalStats[w.name].wins++; window.state.globalStats[w.name].ballsBalance += b;
@@ -699,7 +716,7 @@
         let dataHora = t.customDate ? t.customDate : (new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}));
         
         window.state.hallOfFame.push({ date: dataHora, podium: { first: t.podium.first, second: t.podium.second, third: t.podium.third }, playersFullTable: JSON.parse(JSON.stringify(t.players)) });
-        window.state.torneio = { phase: 'cadastro', players: [], matches: [], lastPlaceName: null, seed4Name: null, seed1Name: null, hasKnockout: true, customDate: '', knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } }, podium: { first: null, second: null, third: null } };
+        window.state.torneio = { phase: 'cadastro', players: [], matches: [], lastPlaceName: null, seed4Name: null, seed1Name: null, hasKnockout: true, customDate: '', scoringSystem: 'padrao', knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } }, podium: { first: null, second: null, third: null } };
         window.salvarDados(); alert("Campeonato registrado com sucesso no Histórico Eterno!");
     }
 
