@@ -313,8 +313,6 @@
         '🌪️ Implacável': 'Vencer 5 partidas seguidas na mesma edição.'
     };
 
-    // A MÁGICA DE LIMPEZA DE STRING
-    // Essa função pega qualquer lixo antigo do banco e acha a conquista verdadeira
     function decodificarConquista(nomeCru) {
         if (!nomeCru) return { full: 'Desconhecido', emoji: '❔', desc: 'Descrição confidencial.' };
         if (conquistasDesc[nomeCru]) return { full: nomeCru, emoji: nomeCru.split(' ')[0], desc: conquistasDesc[nomeCru] };
@@ -368,24 +366,21 @@
             let loadedState = docSnap.data();
             let needsDbUpdate = false;
 
-            // SISTEMA AUTO-LAVAGEM DE BANCO DE DADOS
             if (loadedState.globalStats) {
                 Object.values(loadedState.globalStats).forEach(p => {
                     if (p.achievements && p.achievements.length > 0) {
                         let correctedAchs = [];
                         p.achievements.forEach(a => {
                             let info = decodificarConquista(a);
-                            if (info.full !== a) needsDbUpdate = true; // Achou uma velha!
+                            if (info.full !== a) needsDbUpdate = true;
                             if (!correctedAchs.includes(info.full)) correctedAchs.push(info.full);
                         });
-                        p.achievements = correctedAchs; // Substitui pela versão com EMOJI
+                        p.achievements = correctedAchs;
                     }
                 });
             }
-
             window.state = loadedState;
 
-            // Se precisou arrumar e você for Admin, ele manda a versão limpa pro Firebase!
             if (needsDbUpdate && sessionStorage.getItem('sinucaRole') === 'admin') {
                 setDoc(torneioDoc, window.state);
             }
@@ -407,6 +402,19 @@
         ['torneio', 'jogos', 'global'].forEach(id => document.getElementById(`view-${id}`).classList.add('hidden'));
         document.getElementById(`view-${aba}`).classList.remove('hidden');
         renderInterface();
+    }
+
+    // NOVA FUNÇÃO: PULAR JOGO
+    window.pularJogo = function(id) {
+        let pendentes = window.state.torneio.matches.filter(m => !m.completed);
+        if (pendentes.length <= 1) return alert("Este é o único jogo pendente da liga no momento! Não há para onde adiá-lo.");
+        
+        let index = window.state.torneio.matches.findIndex(x => x.id === id);
+        if (index > -1) {
+            let match = window.state.torneio.matches.splice(index, 1)[0];
+            window.state.torneio.matches.push(match); // Joga para o final do array
+            window.salvarDados();
+        }
     }
 
     window.abrirModalEstatisticas = function(nomeJogador) {
@@ -816,7 +824,31 @@
 
                 if (pendentes.length > 0) {
                     let curr = pendentes[0]; let hP = t.players.find(x => x.name === curr.pHome), aP = t.players.find(x => x.name === curr.pAway);
-                    container.innerHTML += `<div class="current-match-card"><div class="match-badge">🔥 JOGO ATUAL - TURNO ${curr.turno} 🔥</div><div class="vs-container"><div class="player-side"><div class="saida-indicator">Saída</div><img src="${hP.img}"><span class="vulgo-big">${hP.vulgo || hP.name}</span><span class="realname-text">${hP.name}</span></div><div class="vs-text">VS</div><div class="player-side"><img src="${aP.img}"><span class="vulgo-big">${aP.vulgo || aP.name}</span><span class="realname-text">${aP.name}</span></div></div><div class="form-group admin-only" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;"><select id="winner-${curr.id}" style="flex:1;"><option value="">Vencedor...</option><option value="${curr.pHome}">${hP.vulgo || hP.name}</option><option value="${curr.pAway}">${aP.vulgo || aP.name}</option></select><input type="number" id="balls-${curr.id}" placeholder="Bolas restantes" min="1" max="7" style="flex:1;"><button onclick="registrarResultadoLiga(${curr.id})" style="flex:1;">Salvar</button></div></div>`;
+                    
+                    // CARD DO JOGO ATUAL COM NOVO BOTÃO DE ADIAR
+                    container.innerHTML += `
+                        <div class="current-match-card">
+                            <div class="match-badge">🔥 JOGO ATUAL - TURNO ${curr.turno} 🔥</div>
+                            <div class="vs-container">
+                                <div class="player-side"><div class="saida-indicator">Saída</div><img src="${hP.img}"><span class="vulgo-big">${hP.vulgo || hP.name}</span><span class="realname-text">${hP.name}</span></div>
+                                <div class="vs-text">VS</div>
+                                <div class="player-side"><img src="${aP.img}"><span class="vulgo-big">${aP.vulgo || aP.name}</span><span class="realname-text">${aP.name}</span></div>
+                            </div>
+                            <div class="form-group admin-only" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; flex-direction: column; gap: 10px;">
+                                <div style="display:flex; gap:10px; width:100%;">
+                                    <select id="winner-${curr.id}" style="flex:1;">
+                                        <option value="">Vencedor...</option>
+                                        <option value="${curr.pHome}">${hP.vulgo || hP.name}</option>
+                                        <option value="${curr.pAway}">${aP.vulgo || aP.name}</option>
+                                    </select>
+                                    <input type="number" id="balls-${curr.id}" placeholder="Bolas restantes" min="1" max="7" style="flex:1;">
+                                </div>
+                                <div style="display:flex; gap:10px; width:100%;">
+                                    <button onclick="registrarResultadoLiga(${curr.id})" style="flex:3;">Salvar Resultado</button>
+                                    <button onclick="pularJogo(${curr.id})" style="flex:1; background: #555;" title="Adiar este jogo para o final da fila">⏭️ Adiar</button>
+                                </div>
+                            </div>
+                        </div>`;
                     
                     if (pendentes.length > 1) {
                         container.innerHTML += `<h3>Próximos Confrontos (${pendentes.length - 1})</h3><div class="upcoming-list" id="upcomingList" style="margin-bottom: 20px;"></div>`; 
