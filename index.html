@@ -89,8 +89,9 @@
         .step-3 { height: 130px; width: 120px; background-color: var(--bronze); }
         .podium-player-img { width: 70px; height: 70px; border-radius: 50%; position: absolute; top: -40px; border: 4px solid white; background: #333; object-fit: cover;}
         
-        .achievements { font-size: 0.8em; display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px; justify-content: center;}
-        .badge { background: #444; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--highlight); white-space: nowrap; }
+        .achievements { font-size: 1.2em; display: flex; gap: 5px; flex-wrap: wrap; justify-content: center;}
+        .badge { display: inline-block; cursor: help; transition: transform 0.2s; }
+        .badge:hover { transform: scale(1.2); }
         .hidden { display: none !important; }
         .text-muted { font-size: 0.85em; color: #aaa; margin-top: 5px; display: block; }
 
@@ -139,13 +140,36 @@
     </div>
 </div>
 
+<!-- ================= MODAL PERFIL DO JOGADOR ================= -->
+<div id="playerModalOverlay" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:99999; display:flex; justify-content:center; align-items:center; padding: 20px;">
+    <div class="card" style="width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; position: relative;">
+        <button onclick="fecharModalEstatisticas()" style="position: absolute; top: 10px; right: 10px; background: #444; border: none; font-size: 1.2em; width: 35px; height: 35px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center;">✖</button>
+        <div style="text-align: center;">
+            <img id="modalImg" src="" style="width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--highlight); object-fit: cover;">
+            <h2 id="modalVulgo" style="margin: 10px 0 5px 0;">Vulgo</h2>
+            <span id="modalName" class="realname-text" style="display:block; margin-bottom: 20px; font-size: 0.9em;">Nome</span>
+        </div>
+        
+        <div style="display: flex; justify-content: space-around; background: #222; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; border: 1px solid #444;">
+            <div><strong style="color:var(--gold); font-size:1.8em;" id="modalTitulos">0</strong><br><span style="font-size:0.8em; color:#aaa; text-transform: uppercase;">Títulos</span></div>
+            <div><strong style="color:#2ecc71; font-size:1.8em;" id="modalVitorias">0</strong><br><span style="font-size:0.8em; color:#aaa; text-transform: uppercase;">Vitórias</span></div>
+            <div><strong style="color:var(--danger); font-size:1.8em;" id="modalDerrotas">0</strong><br><span style="font-size:0.8em; color:#aaa; text-transform: uppercase;">Derrotas</span></div>
+        </div>
+
+        <h3 style="border-bottom: 1px solid #444; padding-bottom: 10px; color: var(--highlight);">🎖️ Galeria de Conquistas</h3>
+        <div id="modalConquistasList" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+            <!-- Conquistas carregam via JS -->
+        </div>
+    </div>
+</div>
+
 <div class="container hidden" id="mainApp">
     
     <div class="header-top">
         <h1 style="margin: 0;">
             🎱 SNUK CHAMPIONS
             <span class="sub-title">M. CORTELINI AZZOLIN</span>
-            <span id="userBadge" style="font-size: 0.4em; vertical-align: middle; display: inline-block; margin-top: 5px;" class="badge"></span>
+            <span id="userBadge" style="font-size: 0.4em; vertical-align: middle; display: inline-block; margin-top: 5px; border: 1px solid var(--highlight); padding: 2px 6px; border-radius: 4px; background: #444;"></span>
         </h1>
         <button class="btn-logout" onclick="sairDoSistema()">🚪 Sair</button>
     </div>
@@ -302,6 +326,34 @@
     const db = getFirestore(app);
     const torneioDoc = doc(db, "sinuca_db", "dados_oficiais");
 
+    // Dicionário de Conquistas e Descrições
+    const conquistasDesc = {
+        '🦓 Zebra': 'Estando em último lugar, ganhar do jogador que está em primeiro lugar.',
+        '🎱 Rei da Mesa': 'Ganhar uma partida sem deixar o adversário matar nenhuma bola.',
+        '🧹 Varredura': 'Vencer um confronto no Mata-Mata de 2x0 direto.',
+        '🛡️ Invicto': 'Ser o Campeão do torneio sem perder nenhuma partida.',
+        '💀 Sobrevivente': 'Classificar para o Mata-Mata em 4º lugar e ser o Campeão.',
+        '🐎 Cavalo Paraguaio': 'Classificar em 1º lugar, mas ser eliminado na Semifinal.',
+        '🔧 Lanterneiro': 'Ficar em último lugar na tabela geral da edição.',
+        '💔 Saco de Pancadas': 'Jogar a edição inteira e não ganhar de ninguém.',
+        '🤝 Ponto de Honra': 'Jogar pelo menos 3 partidas na edição, mas ganhar apenas 1.',
+        '🥇 Primeiro Caneco': 'Conquistar o seu primeiro título de campeão na história.',
+        '🏆 Bi-Campeão': 'Conquistar 2 títulos na história.',
+        '🎯 Global Elite': 'Conquistar 5 títulos na história.',
+        '🥵 Pipoqueiro': 'Chegar na Grande Final e perder o título 3 vezes na história.',
+        '🥉 O Eterno Terceiro': 'Ficar no 3º lugar do pódio em 2 edições diferentes.',
+        '🏅 Veterano': 'Atingir a marca de 50 partidas jogadas na história.',
+        '💯 Centenário': 'Atingir a marca de 100 partidas jogadas na história.',
+        '🧨 Demolidor': 'Ficar com o Saldo de Bolas histórico positivo em +50.',
+        '🕳️ Fundo do Poço': 'Ficar com o Saldo de Bolas histórico negativo em -50.',
+        '🤏 Por um Fio': 'Vencer uma partida apertada, deixando apenas 1 bola do adversário.',
+        '🔥 Em Chamas': 'Vencer 3 partidas seguidas na mesma edição.',
+        '🚑 Saiu da UTI': 'Vencer uma partida logo após ter 3 derrotas seguidas.',
+        '🥊 O Vingador': 'Ganhar de um jogador que tinha ganhado de você no turno anterior.',
+        '💳 Cartão Fidelidade': 'Vencer o mesmo jogador duas vezes na mesma edição.',
+        '🌪️ Implacável': 'Vencer 5 partidas seguidas na mesma edição.'
+    };
+
     window.entrarComoAdmin = function() {
         if (document.getElementById('adminUser').value === 'admin' && document.getElementById('adminPass').value === 'admin-snuk') {
             sessionStorage.setItem('sinucaRole', 'admin'); iniciarAppGrafica();
@@ -318,7 +370,7 @@
         document.getElementById('loginOverlay').classList.add('hidden'); document.getElementById('mainApp').classList.remove('hidden');
         if (sessionStorage.getItem('sinucaRole') === 'viewer') {
             document.body.classList.add('viewer-mode');
-            document.getElementById('userBadge').textContent = '👁️ View'; document.getElementById('userBadge').style.background = '#555';
+            document.getElementById('userBadge').textContent = '👁️ View';
         } else {
             document.body.classList.remove('viewer-mode'); document.getElementById('userBadge').textContent = '👑 Admin';
         }
@@ -354,6 +406,34 @@
         renderInterface();
     }
 
+    window.abrirModalEstatisticas = function(nomeJogador) {
+        let p = window.state.globalStats[nomeJogador];
+        if(!p) return;
+        document.getElementById('modalImg').src = p.img;
+        document.getElementById('modalVulgo').textContent = p.vulgo || nomeJogador;
+        document.getElementById('modalName').textContent = nomeJogador;
+        document.getElementById('modalTitulos').textContent = p.titles || 0;
+        document.getElementById('modalVitorias').textContent = p.wins || 0;
+        document.getElementById('modalDerrotas').textContent = p.losses || 0;
+        
+        let list = document.getElementById('modalConquistasList');
+        if(!p.achievements || p.achievements.length === 0) {
+            list.innerHTML = '<span style="color:#888; text-align:center; display:block; padding: 20px;">Este jogador ainda não possui conquistas.</span>';
+        } else {
+            list.innerHTML = p.achievements.map(a => {
+                let desc = conquistasDesc[a] || 'Descrição confidencial.';
+                return `
+                <div style="background:#2c2c2c; padding: 12px; border-radius: 6px; border-left: 4px solid var(--highlight); display: flex; flex-direction: column; text-align: left; transition: 0.2s;">
+                    <strong style="font-size: 1.1em; color: white;">${a}</strong>
+                    <span style="font-size:0.85em; color:#aaa; margin-top: 3px;">${desc}</span>
+                </div>`;
+            }).join('');
+        }
+        document.getElementById('playerModalOverlay').classList.remove('hidden');
+    }
+
+    window.fecharModalEstatisticas = function() { document.getElementById('playerModalOverlay').classList.add('hidden'); }
+
     window.cancelarTorneioAtual = function() {
         if(confirm("Deseja cancelar a EDIÇÃO ATUAL? \n\nTudo desse campeonato sumirá e os pontos ganhos nele serão removidos das Estatísticas Globais.")) {
             window.state.torneio.players.forEach(p => {
@@ -386,12 +466,10 @@
         else { if(p.img) window.state.globalStats[p.name].img = p.img; if(p.vulgo) window.state.globalStats[p.name].vulgo = p.vulgo; }
     }
 
-    // Gerenciador Inteligente de Conquistas Globais
     function checkGlobalAchievements(name) {
         if(!window.state.globalStats[name]) return;
         let gs = window.state.globalStats[name];
         let achs = gs.achievements || [];
-        
         const award = (b) => { if (!achs.includes(b)) achs.push(b); };
 
         if (gs.titles >= 1) award('🥇 Primeiro Caneco');
@@ -403,14 +481,12 @@
         if (gs.matches >= 100) award('💯 Centenário');
         if (gs.ballsBalance >= 50) award('🧨 Demolidor');
         if (gs.ballsBalance <= -50) award('🕳️ Fundo do Poço');
-        
         gs.achievements = achs;
     }
 
     window.adicionarJogadorExistente = function() {
         const name = document.getElementById('existingPlayerSelect').value;
         if (!name) return alert("Selecione um jogador na lista!");
-        
         let dbData = window.state.globalStats[name];
         let np = { name: name, vulgo: dbData.vulgo, img: dbData.img, matches: 0, wins: 0, losses: 0, points: 0, ballsBalance: 0, currentWinStreak: 0, currentLossStreak: 0 };
         window.state.torneio.players.push(np);
@@ -424,7 +500,6 @@
         
         if (!name) return alert("O Nome Completo é obrigatório!");
         if (window.state.torneio.players.find(p => p.name === name)) return alert("Jogador já está na edição atual!");
-        
         if (!vulgo) vulgo = name.split(' ')[0];
 
         if (file) {
@@ -485,7 +560,6 @@
                 tp.splice(1, 0, tp.pop());
             }
         }
-        
         window.state.torneio.players.forEach(pl => { pl.currentWinStreak = 0; pl.currentLossStreak = 0; });
         window.state.torneio.phase = 'liga'; window.salvarDados();
     }
@@ -505,74 +579,51 @@
         l.currentWinStreak = l.currentWinStreak || 0;
         l.currentLossStreak = l.currentLossStreak || 0;
 
-        // CONQUISTA: Zebra
         let rank = [...window.state.torneio.players].sort((x,y) => y.points - x.points);
         if (w.matches > 0 && w.name === rank[rank.length - 1].name && l.name === rank[0].name) {
             if (!window.state.globalStats[w.name].achievements.includes('🦓 Zebra')) window.state.globalStats[w.name].achievements.push('🦓 Zebra');
         }
-
-        // CONQUISTA: Rei da Mesa
         if (b === 7) {
             if (!window.state.globalStats[w.name].achievements.includes('🎱 Rei da Mesa')) window.state.globalStats[w.name].achievements.push('🎱 Rei da Mesa');
         }
-
-        // CONQUISTA: Por um Fio
         if (b === 1) {
             if (!window.state.globalStats[w.name].achievements.includes('🤏 Por um Fio')) window.state.globalStats[w.name].achievements.push('🤏 Por um Fio');
         }
-
-        // CONQUISTA: O Vingador
         let pastLoss = window.state.torneio.matches.find(pastM => pastM.completed && pastM.winnerName === l.name && (pastM.pHome === w.name || pastM.pAway === w.name));
         if (pastLoss) {
             if (!window.state.globalStats[w.name].achievements.includes('🥊 O Vingador')) window.state.globalStats[w.name].achievements.push('🥊 O Vingador');
         }
-
-        // CONQUISTA: Cartão Fidelidade (Ganhar do mesmo jogador de novo na mesma edição)
         let pastWin = window.state.torneio.matches.find(pastM => pastM.completed && pastM.winnerName === w.name && (pastM.pHome === l.name || pastM.pAway === l.name) && pastM.id !== id);
         if (pastWin) {
             if (!window.state.globalStats[w.name].achievements.includes('💳 Cartão Fidelidade')) window.state.globalStats[w.name].achievements.push('💳 Cartão Fidelidade');
         }
-
-        // CONQUISTA: Saiu da UTI
         if (w.currentLossStreak >= 3) {
             if (!window.state.globalStats[w.name].achievements.includes('🚑 Saiu da UTI')) window.state.globalStats[w.name].achievements.push('🚑 Saiu da UTI');
         }
 
-        w.currentLossStreak = 0;
-        w.currentWinStreak++;
-        
-        // CONQUISTA: Em Chamas (3 seguidas)
+        w.currentLossStreak = 0; w.currentWinStreak++;
         if (w.currentWinStreak === 3) {
             if (!window.state.globalStats[w.name].achievements.includes('🔥 Em Chamas')) window.state.globalStats[w.name].achievements.push('🔥 Em Chamas');
         }
-
-        // CONQUISTA: Implacável (5 seguidas)
         if (w.currentWinStreak === 5) {
             if (!window.state.globalStats[w.name].achievements.includes('🌪️ Implacável')) window.state.globalStats[w.name].achievements.push('🌪️ Implacável');
         }
-
-        l.currentWinStreak = 0;
-        l.currentLossStreak++;
+        l.currentWinStreak = 0; l.currentLossStreak++;
 
         w.matches++; w.wins++; w.points += (3 + b); w.ballsBalance += b; 
         l.matches++; l.losses++; l.ballsBalance -= b;
-        
         m.completed = true; m.winnerName = wName; m.ballsLeft = b;
 
         window.state.globalStats[w.name].matches++; window.state.globalStats[w.name].wins++; window.state.globalStats[w.name].ballsBalance += b;
         window.state.globalStats[lName].matches++; window.state.globalStats[lName].losses++; window.state.globalStats[lName].ballsBalance -= b;
         
-        checkGlobalAchievements(wName);
-        checkGlobalAchievements(lName);
-        window.salvarDados();
+        checkGlobalAchievements(wName); checkGlobalAchievements(lName); window.salvarDados();
     }
 
     window.iniciarMataMata = function() {
         window.state.torneio.players.sort((a, b) => b.points !== a.points ? b.points - a.points : (b.wins !== a.wins ? b.wins - a.wins : b.ballsBalance - a.ballsBalance));
         const t4 = window.state.torneio.players.slice(0, 4); 
-        
-        window.state.torneio.seed1Name = t4[0].name;
-        window.state.torneio.seed4Name = t4[3].name;
+        window.state.torneio.seed1Name = t4[0].name; window.state.torneio.seed4Name = t4[3].name;
         window.state.torneio.lastPlaceName = window.state.torneio.players[window.state.torneio.players.length - 1].name;
 
         let k = window.state.torneio.knockout;
@@ -583,32 +634,22 @@
     window.finalizarPontosCorridos = function() {
         window.state.torneio.players.sort((a, b) => b.points !== a.points ? b.points - a.points : (b.wins !== a.wins ? b.wins - a.wins : b.ballsBalance - a.ballsBalance));
         let t = window.state.torneio;
-        
-        t.podium.first = t.players[0];
-        t.podium.second = t.players[1];
-        t.podium.third = t.players[2];
-        t.lastPlaceName = t.players[t.players.length - 1].name;
-        
-        t.phase = 'podio';
-        dispararConfetes();
-        window.salvarDados();
+        t.podium.first = t.players[0]; t.podium.second = t.players[1]; t.podium.third = t.players[2]; t.lastPlaceName = t.players[t.players.length - 1].name;
+        t.phase = 'podio'; dispararConfetes(); window.salvarDados();
     }
 
     window.registrarVitoriaBo3 = function(fase, n) {
         let m = window.state.torneio.knockout[fase]; n === 1 ? m.winsP1++ : m.winsP2++;
         if (m.winsP1 === 2 || m.winsP2 === 2) {
             m.completed = true; m.winner = m.winsP1 === 2 ? m.p1 : m.p2; m.loser = m.winsP1 === 2 ? m.p2 : m.p1;
-            
             if ((m.winsP1 === 2 && m.winsP2 === 0) || (m.winsP2 === 2 && m.winsP1 === 0)) {
                 if (!window.state.globalStats[m.winner.name].achievements.includes('🧹 Varredura')) window.state.globalStats[m.winner.name].achievements.push('🧹 Varredura');
             }
-
             window.state.globalStats[m.winner.name].matches++; window.state.globalStats[m.winner.name].wins++;
             window.state.globalStats[m.loser.name].matches++; window.state.globalStats[m.loser.name].losses++;
             let localL = window.state.torneio.players.find(p => p.name === m.loser.name); if(localL) localL.losses++;
             
-            checkGlobalAchievements(m.winner.name);
-            checkGlobalAchievements(m.loser.name);
+            checkGlobalAchievements(m.winner.name); checkGlobalAchievements(m.loser.name);
         }
         let t = window.state.torneio;
         if (t.phase === 'semis' && t.knockout.semi1.completed && t.knockout.semi2.completed) {
@@ -622,41 +663,30 @@
     window.iniciarNovaEdicao = function() {
         let t = window.state.torneio; 
         let p1Name = t.podium.first.name, p2Name = t.podium.second.name, p3Name = t.podium.third ? t.podium.third.name : null;
-        
         let cLocal = t.players.find(p => p.name === p1Name);
+        
         if (cLocal && cLocal.losses === 0 && !window.state.globalStats[p1Name].achievements.includes('🛡️ Invicto')) {
             window.state.globalStats[p1Name].achievements.push('🛡️ Invicto');
         }
-
         if (t.hasKnockout && p1Name === t.seed4Name && !window.state.globalStats[p1Name].achievements.includes('💀 Sobrevivente')) {
             window.state.globalStats[p1Name].achievements.push('💀 Sobrevivente');
         }
-
         if (t.hasKnockout && t.seed1Name) {
             if ((t.knockout.semi1.completed && t.knockout.semi1.loser.name === t.seed1Name) || 
                 (t.knockout.semi2.completed && t.knockout.semi2.loser.name === t.seed1Name)) {
-                if (!window.state.globalStats[t.seed1Name].achievements.includes('🐎 Cavalo Paraguaio')) {
-                    window.state.globalStats[t.seed1Name].achievements.push('🐎 Cavalo Paraguaio');
-                }
+                if (!window.state.globalStats[t.seed1Name].achievements.includes('🐎 Cavalo Paraguaio')) { window.state.globalStats[t.seed1Name].achievements.push('🐎 Cavalo Paraguaio'); }
             }
         }
-
         if (t.lastPlaceName) {
-            if (!window.state.globalStats[t.lastPlaceName].achievements.includes('🔧 Lanterneiro')) {
-                window.state.globalStats[t.lastPlaceName].achievements.push('🔧 Lanterneiro');
-            }
+            if (!window.state.globalStats[t.lastPlaceName].achievements.includes('🔧 Lanterneiro')) { window.state.globalStats[t.lastPlaceName].achievements.push('🔧 Lanterneiro'); }
         }
 
         t.players.forEach(p => {
             if (p.matches > 0 && p.wins === 0) {
-                if (!window.state.globalStats[p.name].achievements.includes('💔 Saco de Pancadas')) {
-                    window.state.globalStats[p.name].achievements.push('💔 Saco de Pancadas');
-                }
+                if (!window.state.globalStats[p.name].achievements.includes('💔 Saco de Pancadas')) { window.state.globalStats[p.name].achievements.push('💔 Saco de Pancadas'); }
             }
             if (p.matches >= 3 && p.wins === 1) {
-                if (!window.state.globalStats[p.name].achievements.includes('🤝 Ponto de Honra')) {
-                    window.state.globalStats[p.name].achievements.push('🤝 Ponto de Honra');
-                }
+                if (!window.state.globalStats[p.name].achievements.includes('🤝 Ponto de Honra')) { window.state.globalStats[p.name].achievements.push('🤝 Ponto de Honra'); }
             }
         });
         
@@ -668,17 +698,8 @@
         
         let dataHora = t.customDate ? t.customDate : (new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}));
         
-        window.state.hallOfFame.push({ 
-            date: dataHora, 
-            podium: { first: t.podium.first, second: t.podium.second, third: t.podium.third },
-            playersFullTable: JSON.parse(JSON.stringify(t.players)) 
-        });
-        
-        window.state.torneio = {
-            phase: 'cadastro', players: [], matches: [], lastPlaceName: null, seed4Name: null, seed1Name: null, hasKnockout: true, customDate: '',
-            knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } }, 
-            podium: { first: null, second: null, third: null }
-        };
+        window.state.hallOfFame.push({ date: dataHora, podium: { first: t.podium.first, second: t.podium.second, third: t.podium.third }, playersFullTable: JSON.parse(JSON.stringify(t.players)) });
+        window.state.torneio = { phase: 'cadastro', players: [], matches: [], lastPlaceName: null, seed4Name: null, seed1Name: null, hasKnockout: true, customDate: '', knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } }, podium: { first: null, second: null, third: null } };
         window.salvarDados(); alert("Campeonato registrado com sucesso no Histórico Eterno!");
     }
 
@@ -718,7 +739,22 @@
                 .sort((a,b) => (b.titles || 0) !== (a.titles || 0) ? (b.titles || 0) - (a.titles || 0) : b.wins - a.wins)
                 .forEach(p => {
                     let tdTitles = `<td><strong>${p.titles || 0}</strong> 🏆</td>`;
-                    tb.innerHTML += `<tr><td class="player-cell"><img src="${p.img}" class="player-img">${formatarNome(p)}</td>${tdTitles}<td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td><td><div class="achievements">${(p.achievements||[]).map(b=>`<span class="badge">${b}</span>`).join('')}</div></td></tr>`;
+                    
+                    // Renderiza APENAS o emoji no Histórico (Ex: '🦓 Zebra' -> '🦓')
+                    let emojisHtml = (p.achievements || []).map(a => {
+                        let emoji = a.split(' ')[0];
+                        let desc = conquistasDesc[a] || '';
+                        return `<span class="badge" title="${desc}">${emoji}</span>`;
+                    }).join('');
+
+                    let tdConquistas = `
+                        <td style="min-width: 80px;">
+                            <div class="achievements">${emojisHtml}</div>
+                            <button style="margin-top: 8px; font-size: 0.75em; padding: 5px; width: 100%; background: #333; border: 1px solid #555; color: #fff;" onclick="abrirModalEstatisticas('${p.name}')">🔍 Ver Perfil</button>
+                        </td>
+                    `;
+
+                    tb.innerHTML += `<tr><td class="player-cell"><img src="${p.img}" class="player-img">${formatarNome(p)}</td>${tdTitles}<td>${p.matches}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.ballsBalance > 0 ? '+' : ''}${p.ballsBalance}</td>${tdConquistas}</tr>`;
                 });
             
             const hof = document.getElementById('hallOfFameContainer'); 
