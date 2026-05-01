@@ -141,7 +141,6 @@
     </div>
 </div>
 
-<!-- ================= MODAL PERFIL DO JOGADOR ================= -->
 <div id="playerModalOverlay" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:99999; display:flex; justify-content:center; align-items:center; padding: 20px;">
     <div class="card" style="width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; position: relative;">
         <button onclick="fecharModalEstatisticas()" style="position: absolute; top: 10px; right: 10px; background: #444; border: none; font-size: 1.2em; width: 35px; height: 35px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer;">✖</button>
@@ -158,14 +157,11 @@
         </div>
 
         <h3 style="border-bottom: 1px solid #444; padding-bottom: 10px; color: var(--highlight);">🎖️ Galeria de Conquistas</h3>
-        <div id="modalConquistasList" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-            <!-- Conquistas carregam via JS -->
-        </div>
+        <div id="modalConquistasList" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;"></div>
     </div>
 </div>
 
 <div class="container hidden" id="mainApp">
-    
     <div class="header-top">
         <h1 style="margin: 0;">
             🎱 SNUK CHAMPIONS
@@ -186,31 +182,25 @@
         </div>
     </div>
 
-    <!-- Navegação -->
     <div class="nav-tabs">
         <div class="tab active" id="tab-torneio" onclick="alterarAba('torneio')">Classificação</div>
         <div class="tab" id="tab-jogos" onclick="alterarAba('jogos')">Jogos 🎱</div>
         <div class="tab" id="tab-global" onclick="alterarAba('global')">Histórico 🏆</div>
     </div>
 
-    <!-- ================= 1. CLASSIFICAÇÃO (Torneio Atual) ================= -->
     <div id="view-torneio">
-        
         <div class="card admin-only" id="section-cadastro">
             <h2>Cadastrar Jogadores</h2>
-            
             <div style="background: #222; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid var(--highlight);">
                 <h3 style="margin-top: 0; font-size: 1.1em; color: var(--highlight);">📥 Adicionar do Banco de Dados</h3>
                 <div class="form-group" style="margin-bottom: 0;">
-                    <select id="existingPlayerSelect" style="flex: 2; padding: 12px; font-size: 1.05em;">
-                        <option value="">Selecione um jogador salvo...</option>
-                    </select>
+                    <select id="existingPlayerSelect" style="flex: 2; padding: 12px; font-size: 1.05em;"><option value="">Selecione um jogador salvo...</option></select>
                     <button onclick="adicionarJogadorExistente()" style="flex: 1; background: var(--highlight); color: #1a1a1a;">Adicionar</button>
                 </div>
             </div>
 
             <div style="background: #222; padding: 15px; border-radius: 8px; border-left: 4px solid var(--green-table);">
-                <h3 style="margin-top: 0; font-size: 1.1em; color: #2ecc71;">✨ Criar Novo Atleta (ou Editar Foto)</h3>
+                <h3 style="margin-top: 0; font-size: 1.1em; color: #2ecc71;">✨ Criar Novo Atleta</h3>
                 <div class="form-group" style="margin-bottom: 0;">
                     <input type="text" id="playerName" placeholder="Nome Completo (Chave)" required style="flex: 1.5;">
                     <input type="text" id="playerVulgo" placeholder="Vulgo" style="flex: 1;">
@@ -227,40 +217,12 @@
             <div class="form-group admin-only" style="margin-top: 25px; justify-content: center; background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444; flex-direction: column; align-items: stretch;">
                 <h3 style="margin-top:0; color:#f4f4f4; text-align:center; margin-bottom: 15px;">⚙️ Configurações do Campeonato</h3>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    
-                    <div style="flex:1; min-width: 180px;">
-                        <label style="display:block; font-size:0.8em; color:#aaa; margin-bottom:5px;">Formato de Jogos</label>
-                        <select id="qtdTurnos" style="width: 100%;">
-                            <option value="1">1 Turno (Todos vs Todos 1x)</option>
-                            <option value="2">2 Turnos (Ida e Volta)</option>
-                            <option value="3">3 Turnos (Longo)</option>
-                        </select>
-                    </div>
-
-                    <div style="flex:1; min-width: 180px;">
-                        <label style="display:block; font-size:0.8em; color:#aaa; margin-bottom:5px;">Pontuação</label>
-                        <select id="sistemaPontuacao" style="width: 100%;">
-                            <option value="padrao">3 Pts por Vitória (Saldo desempata)</option>
-                            <option value="soma_bolas">3 Pts + Saldo de Bolas</option>
-                        </select>
-                    </div>
-
-                    <div style="flex:1; min-width: 180px;">
-                        <label style="display:block; font-size:0.8em; color:#aaa; margin-bottom:5px;">Terá Mata-Mata?</label>
-                        <select id="temMataMata" style="width: 100%;">
-                            <option value="sim">Sim (Semifinal e Final)</option>
-                            <option value="nao">Não (Pontos Corridos - Líder é Campeão)</option>
-                        </select>
-                    </div>
-
-                    <div style="flex:1; min-width: 180px;">
-                        <label style="display:block; font-size:0.8em; color:#aaa; margin-bottom:5px;">Data (Vazio = Hoje)</label>
-                        <input type="date" id="dataAntiga" style="width: 100%;" title="Use para adicionar campeonatos antigos">
-                    </div>
-
+                    <div style="flex:1; min-width: 180px;"><label style="display:block; font-size:0.8em; color:#aaa; margin-bottom:5px;">Formato de Jogos</label><select id="qtdTurnos" style="width: 100%;"><option value="1">1 Turno (Todos vs Todos 1x)</option><option value="2">2 Turnos (Ida e Volta)</option><option value="3">3 Turnos (Longo)</option></select></div>
+                    <div style="flex:1; min-width: 180px;"><label style="display:block; font-size:0.8em; color:#aaa; margin-bottom:5px;">Pontuação</label><select id="sistemaPontuacao" style="width: 100%;"><option value="padrao">3 Pts por Vitória (Saldo desempata)</option><option value="soma_bolas">3 Pts + Saldo de Bolas</option></select></div>
+                    <div style="flex:1; min-width: 180px;"><label style="display:block; font-size:0.8em; color:#aaa; margin-bottom:5px;">Terá Mata-Mata?</label><select id="temMataMata" style="width: 100%;"><option value="sim">Sim (Semifinal e Final)</option><option value="nao">Não (Pontos Corridos)</option></select></div>
+                    <div style="flex:1; min-width: 180px;"><label style="display:block; font-size:0.8em; color:#aaa; margin-bottom:5px;">Data (Vazio = Hoje)</label><input type="date" id="dataAntiga" style="width: 100%;"></div>
                 </div>
             </div>
-
             <button class="btn-start" onclick="iniciarCampeonato()">Iniciar Campeonato</button>
         </div>
 
@@ -281,19 +243,12 @@
             <button class="btn-start admin-only" style="margin-top: 40px;" onclick="iniciarNovaEdicao()">Registrar no Histórico e Iniciar Nova Edição</button>
         </div>
 
-        <div style="text-align: right; margin-top: 20px;" class="admin-only">
-            <button class="btn-danger" onclick="cancelarTorneioAtual()">🛑 Cancelar Edição Atual</button>
-        </div>
+        <div style="text-align: right; margin-top: 20px;" class="admin-only"><button class="btn-danger" onclick="cancelarTorneioAtual()">🛑 Cancelar Edição Atual</button></div>
     </div>
 
-    <!-- ================= 2. ABA DE JOGOS ================= -->
-    <div id="view-jogos" class="hidden">
-        <div class="card" id="jogos-container"></div>
-    </div>
+    <div id="view-jogos" class="hidden"><div class="card" id="jogos-container"></div></div>
 
-    <!-- ================= 3. ESTATÍSTICAS E HISTÓRICO ================= -->
     <div id="view-global" class="hidden">
-        
         <div class="card">
             <h2>📊 Estatísticas Gerais (Todos os Tempos)</h2>
             <p class="text-muted" style="text-align:center;">Soma de pontos, vitórias e derrotas de todas as edições jogadas.</p>
@@ -304,16 +259,12 @@
                 </table>
             </div>
         </div>
-
         <div class="card" style="margin-top: 20px;">
             <h2>🏛️ Histórico de Edições</h2>
             <p class="text-muted" style="text-align:center;">A galeria eterna dos campeões do SNUK CHAMPIONS.</p>
             <div id="hallOfFameContainer" style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;"></div>
         </div>
-
-        <div style="text-align: right; margin-top: 20px;" class="admin-only">
-            <button class="btn-danger" onclick="resetarTudoHard()">⚠️ Apagar TODO o Histórico e Estatísticas</button>
-        </div>
+        <div style="text-align: right; margin-top: 20px;" class="admin-only"><button class="btn-danger" onclick="resetarTudoHard()">⚠️ Apagar TODO o Histórico e Estatísticas</button></div>
     </div>
 </div>
 
@@ -335,7 +286,6 @@
     const db = getFirestore(app);
     const torneioDoc = doc(db, "sinuca_db", "dados_oficiais");
 
-    // Dicionário de Conquistas e Descrições (Chaves oficiais com Emojis)
     const conquistasDesc = {
         '🦓 Zebra': 'Estando em último lugar, ganhar do jogador que está em primeiro lugar.',
         '🎱 Rei da Mesa': 'Ganhar uma partida sem deixar o adversário matar nenhuma bola.',
@@ -363,16 +313,23 @@
         '🌪️ Implacável': 'Vencer 5 partidas seguidas na mesma edição.'
     };
 
-    // TRADUTOR: Traduz strings velhas do banco de dados para a string com Emoji na hora de exibir
-    const fixOldAchievementsMap = {
-        'Zebra': '🦓 Zebra', 'Rei da Mesa': '🎱 Rei da Mesa', 'Varredura': '🧹 Varredura', 'Invicto': '🛡️ Invicto', 
-        'Sobrevivente': '💀 Sobrevivente', 'Cavalo Paraguaio': '🐎 Cavalo Paraguaio', 'Lanterneiro': '🔧 Lanterneiro', 
-        'Saco de Pancadas': '💔 Saco de Pancadas', 'Ponto de Honra': '🤝 Ponto de Honra', 'Primeiro Caneco': '🥇 Primeiro Caneco', 
-        'Bi-Campeão': '🏆 Bi-Campeão', 'Global Elite': '🎯 Global Elite', 'Pipoqueiro': '🥵 Pipoqueiro', 'O Eterno Terceiro': '🥉 O Eterno Terceiro', 
-        'Veterano': '🏅 Veterano', 'Centenário': '💯 Centenário', 'Demolidor': '🧨 Demolidor', 'Fundo do Poço': '🕳️ Fundo do Poço', 
-        'Por um Fio': '🤏 Por um Fio', 'Em Chamas': '🔥 Em Chamas', 'Saiu da UTI': '🚑 Saiu da UTI', 'O Vingador': '🥊 O Vingador', 
-        'Cartão Fidelidade': '💳 Cartão Fidelidade', 'Implacável': '🌪️ Implacável'
-    };
+    // A MÁGICA DE LIMPEZA DE STRING
+    // Essa função pega qualquer lixo antigo do banco e acha a conquista verdadeira
+    function decodificarConquista(nomeCru) {
+        if (!nomeCru) return { full: 'Desconhecido', emoji: '❔', desc: 'Descrição confidencial.' };
+        if (conquistasDesc[nomeCru]) return { full: nomeCru, emoji: nomeCru.split(' ')[0], desc: conquistasDesc[nomeCru] };
+        
+        let limparString = str => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+        let cruLimpo = limparString(nomeCru);
+
+        for (let chaveOficial in conquistasDesc) {
+            let chaveLimpa = limparString(chaveOficial);
+            if (chaveLimpa === cruLimpo || chaveLimpa.includes(cruLimpo) || cruLimpo.includes(chaveLimpa)) {
+                return { full: chaveOficial, emoji: chaveOficial.split(' ')[0], desc: conquistasDesc[chaveOficial] };
+            }
+        }
+        return { full: nomeCru, emoji: '❔', desc: 'Descrição confidencial.' };
+    }
 
     window.entrarComoAdmin = function() {
         if (document.getElementById('adminUser').value === 'admin' && document.getElementById('adminPass').value === 'admin-snuk') {
@@ -407,8 +364,34 @@
     window.state = null; let abaAtual = 'torneio';
 
     onSnapshot(torneioDoc, (docSnap) => {
-        if (docSnap.exists()) window.state = docSnap.data();
-        else { setDoc(torneioDoc, defaultState); window.state = defaultState; }
+        if (docSnap.exists()) {
+            let loadedState = docSnap.data();
+            let needsDbUpdate = false;
+
+            // SISTEMA AUTO-LAVAGEM DE BANCO DE DADOS
+            if (loadedState.globalStats) {
+                Object.values(loadedState.globalStats).forEach(p => {
+                    if (p.achievements && p.achievements.length > 0) {
+                        let correctedAchs = [];
+                        p.achievements.forEach(a => {
+                            let info = decodificarConquista(a);
+                            if (info.full !== a) needsDbUpdate = true; // Achou uma velha!
+                            if (!correctedAchs.includes(info.full)) correctedAchs.push(info.full);
+                        });
+                        p.achievements = correctedAchs; // Substitui pela versão com EMOJI
+                    }
+                });
+            }
+
+            window.state = loadedState;
+
+            // Se precisou arrumar e você for Admin, ele manda a versão limpa pro Firebase!
+            if (needsDbUpdate && sessionStorage.getItem('sinucaRole') === 'admin') {
+                setDoc(torneioDoc, window.state);
+            }
+        } else { 
+            setDoc(torneioDoc, defaultState); window.state = defaultState; 
+        }
         if (sessionStorage.getItem('sinucaRole')) renderInterface();
     });
 
@@ -441,14 +424,11 @@
             list.innerHTML = '<span style="color:#888; text-align:center; display:block; padding: 20px;">Este jogador ainda não possui conquistas.</span>';
         } else {
             list.innerHTML = p.achievements.map(a => {
-                // AQUI A MÁGICA ACONTECE: traduz pro nome com emoji se for string antiga
-                let fixedA = fixOldAchievementsMap[a] || a; 
-                let desc = conquistasDesc[fixedA] || 'Descrição confidencial.';
-                
+                let info = decodificarConquista(a);
                 return `
                 <div style="background:#2c2c2c; padding: 12px; border-radius: 6px; border-left: 4px solid var(--highlight); display: flex; flex-direction: column; text-align: left; transition: 0.2s;">
-                    <strong style="font-size: 1.1em; color: white;">${fixedA}</strong>
-                    <span style="font-size:0.85em; color:#aaa; margin-top: 3px;">${desc}</span>
+                    <strong style="font-size: 1.1em; color: white;">${info.full}</strong>
+                    <span style="font-size:0.85em; color:#aaa; margin-top: 3px;">${info.desc}</span>
                 </div>`;
             }).join('');
         }
@@ -774,11 +754,8 @@
                     let tdTitles = `<td><strong>${p.titles || 0}</strong> 🏆</td>`;
                     
                     let emojisHtml = (p.achievements || []).map(a => {
-                        // AQUI A MÁGICA ACONTECE TAMBÉM: Traduz pro icone na tabela global
-                        let fixedA = fixOldAchievementsMap[a] || a;
-                        let emoji = fixedA.split(' ')[0];
-                        let desc = conquistasDesc[fixedA] || 'Descrição confidencial.';
-                        return `<span class="badge" title="${desc}">${emoji}</span>`;
+                        let info = decodificarConquista(a);
+                        return `<span class="badge" title="${info.desc}">${info.emoji}</span>`;
                     }).join('');
 
                     let tdConquistas = `
