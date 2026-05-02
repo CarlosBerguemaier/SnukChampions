@@ -264,7 +264,12 @@
             <p class="text-muted" style="text-align:center;">A galeria eterna dos campeões do SNUK CHAMPIONS.</p>
             <div id="hallOfFameContainer" style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;"></div>
         </div>
-        <div style="text-align: right; margin-top: 20px;" class="admin-only"><button class="btn-danger" onclick="resetarTudoHard()">⚠️ Apagar TODO o Histórico e Estatísticas</button></div>
+        
+        <!-- NOVA ÁREA DE BACKUP E RESET -->
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; flex-wrap: wrap;" class="admin-only">
+            <button onclick="fazerBackupLocal()" style="background: #3498db; color: white; width: auto; padding: 10px 20px; border-radius: 4px;">💾 Baixar Backup Manual</button>
+            <button class="btn-danger" onclick="resetarTudoHard()">⚠️ Apagar TODO o Histórico e Estatísticas</button>
+        </div>
     </div>
 </div>
 
@@ -329,6 +334,29 @@
         return { full: nomeCru, emoji: '❔', desc: 'Descrição confidencial.' };
     }
 
+    // NOVA FUNÇÃO: BACKUP LOCAL
+    window.fazerBackupLocal = function() {
+        if (!window.state) return;
+        
+        // Empacota tudo em formato JSON
+        const dataStr = JSON.stringify(window.state, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        // Cria um link invisível e clica nele para forçar o download
+        const a = document.createElement('a');
+        const dataAtual = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
+        a.href = url;
+        a.download = `backup_snuk_champions_${dataAtual}.json`;
+        
+        document.body.appendChild(a);
+        a.click();
+        
+        // Limpa as variáveis da memória
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
     window.entrarComoAdmin = function() {
         if (document.getElementById('adminUser').value === 'admin' && document.getElementById('adminPass').value === 'admin-snuk') {
             sessionStorage.setItem('sinucaRole', 'admin'); iniciarAppGrafica();
@@ -363,29 +391,9 @@
 
     onSnapshot(torneioDoc, (docSnap) => {
         if (docSnap.exists()) {
-            let loadedState = docSnap.data();
-            let needsDbUpdate = false;
-
-            if (loadedState.globalStats) {
-                Object.values(loadedState.globalStats).forEach(p => {
-                    if (p.achievements && p.achievements.length > 0) {
-                        let correctedAchs = [];
-                        p.achievements.forEach(a => {
-                            let info = decodificarConquista(a);
-                            if (info.full !== a) needsDbUpdate = true;
-                            if (!correctedAchs.includes(info.full)) correctedAchs.push(info.full);
-                        });
-                        p.achievements = correctedAchs;
-                    }
-                });
-            }
-            window.state = loadedState;
-
-            if (needsDbUpdate && sessionStorage.getItem('sinucaRole') === 'admin') {
-                setDoc(torneioDoc, window.state);
-            }
+            window.state = docSnap.data();
         } else { 
-            setDoc(torneioDoc, defaultState); window.state = defaultState; 
+            window.state = JSON.parse(JSON.stringify(defaultState)); 
         }
         if (sessionStorage.getItem('sinucaRole')) renderInterface();
     });
@@ -404,7 +412,6 @@
         renderInterface();
     }
 
-    // NOVA FUNÇÃO: PULAR JOGO
     window.pularJogo = function(id) {
         let pendentes = window.state.torneio.matches.filter(m => !m.completed);
         if (pendentes.length <= 1) return alert("Este é o único jogo pendente da liga no momento! Não há para onde adiá-lo.");
@@ -412,7 +419,7 @@
         let index = window.state.torneio.matches.findIndex(x => x.id === id);
         if (index > -1) {
             let match = window.state.torneio.matches.splice(index, 1)[0];
-            window.state.torneio.matches.push(match); // Joga para o final do array
+            window.state.torneio.matches.push(match);
             window.salvarDados();
         }
     }
@@ -719,7 +726,12 @@
         
         window.state.hallOfFame.push({ date: dataHora, podium: { first: t.podium.first, second: t.podium.second, third: t.podium.third }, playersFullTable: JSON.parse(JSON.stringify(t.players)) });
         window.state.torneio = { phase: 'cadastro', players: [], matches: [], lastPlaceName: null, seed4Name: null, seed1Name: null, hasKnockout: true, customDate: '', scoringSystem: 'padrao', knockout: { semi1: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, semi2: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, terceiro: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false }, final: { p1: null, p2: null, winsP1: 0, winsP2: 0, completed: false } }, podium: { first: null, second: null, third: null } };
-        window.salvarDados(); alert("Campeonato registrado com sucesso no Histórico Eterno!");
+        
+        // CHAMA O BACKUP LOCAL ANTES DE SALVAR E FECHAR A TELA
+        window.fazerBackupLocal();
+
+        window.salvarDados(); 
+        alert("Campeonato registrado com sucesso no Histórico Eterno e Backup baixado na sua máquina!");
     }
 
     window.resetarTudoHard = function() { if (prompt("Isso apaga TODOS os campeonatos passados. Digite 'APAGAR' para continuar:") === "APAGAR") { window.state = defaultState; window.salvarDados(); } }
@@ -825,7 +837,6 @@
                 if (pendentes.length > 0) {
                     let curr = pendentes[0]; let hP = t.players.find(x => x.name === curr.pHome), aP = t.players.find(x => x.name === curr.pAway);
                     
-                    // CARD DO JOGO ATUAL COM NOVO BOTÃO DE ADIAR
                     container.innerHTML += `
                         <div class="current-match-card">
                             <div class="match-badge">🔥 JOGO ATUAL - TURNO ${curr.turno} 🔥</div>
